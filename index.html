@@ -1,0 +1,123 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080d20">
+<title>WONDER AI - Your Personal AI Studio</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#080d20;color:#fff;font-family:Arial,sans-serif}
+header{padding:22px 18px;background:#101831;border-bottom:1px solid #b58b37}
+.logo{font-size:27px;font-weight:800;color:#e9bd62}
+header p{color:#b8c1d4;margin:7px 0}
+main{padding:20px;max-width:850px;margin:auto}
+h2{color:#f0c66e}
+.intro{background:linear-gradient(135deg,#18294e,#10152d);padding:24px;border-radius:17px;margin-bottom:22px}
+.intro p{color:#d0d7e7;line-height:1.6}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}
+.card{background:#121d37;border:1px solid #34415d;border-radius:14px;padding:18px;min-height:125px;cursor:pointer;color:white;text-align:left}
+.card:active{background:#26385d}
+.card strong{display:block;color:#f0c66e;font-size:16px;margin-bottom:10px}
+.card span{font-size:13px;color:#c4ccdc;line-height:1.5}
+.panel{display:none;background:#121d37;padding:20px;border-radius:15px;margin-top:20px}
+.panel.active{display:block}
+button.action{background:#d6a94e;color:#111;padding:12px 17px;border:0;border-radius:9px;font-weight:bold;margin-top:12px}
+input,textarea{width:100%;padding:13px;border-radius:9px;border:1px solid #53617b;background:#080d20;color:white;margin-top:9px}
+footer{text-align:center;padding:30px;color:#9da8bd;font-size:12px}
+.status{color:#f0c66e;font-size:13px}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">✦ WONDER AI</div>
+<p>Your Personal AI Studio</p>
+</header>
+<main>
+<section class="intro">
+<h2>Welcome to WONDER AI</h2>
+<p>Your creative space for artificial intelligence, Bible storytelling, images, videos and more.</p>
+<p class="status">Your studio is ready to be configured.</p>
+</section>
+
+<h2>Explore Your AI Studio</h2>
+<div class="grid">
+<button class="card" onclick="openPanel('chat')">
+<strong>✦ AI Chat</strong><span>Ask questions and get assistance.</span>
+</button>
+<button class="card" onclick="openPanel('image')">
+<strong>🎨 Image Studio</strong><span>Plan and create AI image projects.</span>
+</button>
+<button class="card" onclick="openPanel('video')">
+<strong>🎬 Video Studio</strong><span>Prepare creative video projects.</span>
+</button>
+<button class="card" onclick="openPanel('voice')">
+<strong>🎙 Voice Studio</strong><span>Explore voice and narration projects.</span>
+</button>
+<button class="card" onclick="openPanel('bible')">
+<strong>📖 Bible Story Studio</strong><span>Develop Bible stories and scripts.</span>
+</button>
+<button class="card" onclick="openPanel('youtube')">
+<strong>▶ YouTube Studio</strong><span>Plan videos and channel content.</span>
+</button>
+<button class="card" onclick="openPanel('coding')">
+<strong>💻 AI Coding Assistant</strong><span>Plan and organize coding projects.</span>
+</button>
+<button class="card" onclick="openPanel('settings')">
+<strong>⚙ Settings</strong><span>Studio information and setup.</span>
+</button>
+</div>
+
+<section id="chat" class="panel">
+<h2>AI Chat</h2>
+<p>AI connection has not been configured yet. This is where your AI assistant will appear.</p>
+<textarea placeholder="Write your question here..." rows="3"></textarea>
+</section>
+<section id="image" class="panel">
+<h2>Image Studio</h2>
+<p>Your image creation workspace. An image generation service must be connected before images can be generated.</p>
+<textarea placeholder="Describe the image you want..." rows="3"></textarea>
+</section>
+<section id="video" class="panel">
+<h2>Video Studio</h2>
+<p>Your video creation workspace. A video generation service must be connected.</p>
+<textarea placeholder="Describe your video project..." rows="3"></textarea>
+</section>
+<section id="voice" class="panel">
+<h2>Voice Studio</h2>
+<p>Your future voice and narration workspace. A voice service must be connected.</p>
+</section>
+<section id="bible" class="panel">
+<h2>Bible Story Studio</h2>
+<p>Prepare Bible story ideas, scene outlines and narration scripts.</p>
+<textarea placeholder="Enter a Bible story idea..." rows="3"></textarea>
+</section>
+<section id="youtube" class="panel">
+<h2>YouTube Studio</h2>
+<p>Plan your content for Iyanuoluwa Wonder Of God Tails.</p>
+<textarea placeholder="Enter your video idea..." rows="3"></textarea>
+</section>
+<section id="coding" class="panel">
+<h2>AI Coding Assistant</h2>
+<p>Your workspace for planning and organizing software projects.</p>
+<textarea placeholder="Describe what you want to build..." rows="3"></textarea>
+</section>
+<section id="settings" class="panel">
+<h2>Settings</h2>
+<p>WONDER AI</p>
+<p>Version 1.0 — Initial website interface.</p>
+<p>AI services: Not connected yet.</p>
+</section>
+</main>
+<footer>WONDER AI © 2026 · Your Personal AI Studio</footer>
+<script>
+function openPanel(id){
+document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+document.getElementById(id).scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+  </html>
+  
