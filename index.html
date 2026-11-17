@@ -70,9 +70,18 @@ footer{text-align:center;padding:30px;color:#9da8bd;font-size:12px}
 </div>
 
 <section id="chat" class="panel">
-<h2>AI Chat</h2>
-<p>AI connection has not been configured yet. This is where your AI assistant will appear.</p>
-<textarea placeholder="Write your question here..." rows="3"></textarea>
+  <h2>AI Chat</h2>
+  <p>Your personal AI assistant is ready for your questions.</p>
+
+  <div id="chatMessages" style="margin:15px 0; padding:12px; background:#101a30; border-radius:10px; color:white;">
+    <p>Welcome to WONDER AI! How can I help you today?</p>
+  </div>
+
+  <textarea id="chatInput" placeholder="Write your question here..." rows="3" style="width:100%; box-sizing:border-box;"></textarea>
+
+  <button onclick="sendMessage()" style="margin-top:10px; padding:12px 24px; background:#d4af37; color:#101a30; border:0; border-radius:8px; font-weight:bold;">
+    Send
+  </button>
 </section>
 <section id="image" class="panel">
 <h2>Image Studio</h2>
@@ -118,6 +127,30 @@ document.getElementById(id).classList.add('active');
 document.getElementById(id).scrollIntoView({behavior:'smooth'});
 }
 </script>
+  
+<script>
+function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const messages = document.getElementById('chatMessages');
+  const question = input.value.trim();
+
+  if (!question) {
+    alert('Please write a question first.');
+    return;
+  }
+
+  const userMessage = document.createElement('p');
+  userMessage.textContent = 'You: ' + question;
+  messages.appendChild(userMessage);
+
+  const reply = document.createElement('p');
+  reply.textContent = 'WONDER AI: Your message has been received. The AI connection is not yet configured, so I cannot generate an answer yet.';
+  messages.appendChild(reply);
+
+  input.value = '';
+}
+</script>
+  
 </body>
   </html>
   
