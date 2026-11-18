@@ -337,11 +337,17 @@ function previewVideoImage(event) {
   
 
 function showNewChat() {
-  document.getElementById('chatMessages').innerHTML = '<p>Welcome to a new WONDER AI conversation!</p>';
+  openPanel('chat');
+
+  document.getElementById('chatMessages').innerHTML =
+    '<p>WONDER AI: Welcome to a new conversation! How can I help you?</p>';
+
   document.getElementById('chatInput').value = '';
+
   document.getElementById('navigationContent').style.display = 'none';
+
   document.getElementById('chat').scrollIntoView({behavior:'smooth'});
-}
+  }
 
 function showChatHistory() {
   const area = document.getElementById('navigationContent');
