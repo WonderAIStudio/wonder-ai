@@ -107,7 +107,13 @@ footer{text-align:center;padding:30px;color:#9da8bd;font-size:12px}
     <option>YouTube Video</option>
     <option>Other</option>
   </select>
+  <p>Upload an image to turn into a video:</p>
+  <input type="file" id="videoImage" accept="image/*" onchange="previewVideoImage(event)" style="width:100%; color:white;">
 
+  <img id="videoImagePreview" alt="Selected image preview" style="display:none; width:100%; max-width:300px; margin-top:12px; border-radius:10px;">
+
+  <p>Describe how you want the image to move:</p>
+  <textarea id="imageMotionPrompt" placeholder="Example: Make the person gently turn toward the camera..." rows="3" style="width:100%; box-sizing:border-box;"></textarea>
   <button onclick="alert('Your video project has been prepared. AI video generation is not connected yet.')" style="margin-top:12px; padding:12px; background:#d4af37; color:#101a30; border:0; border-radius:8px; font-weight:bold;">
     Prepare Video Project
   </button>
@@ -171,7 +177,17 @@ function sendMessage() {
   input.value = '';
 }
 </script>
-  
+<script>
+function previewVideoImage(event) {
+  const file = event.target.files[0];
+  const preview = document.getElementById('videoImagePreview');
+
+  if (!file) return;
+
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = 'block';
+}
+</script>  
 </body>
   </html>
   
