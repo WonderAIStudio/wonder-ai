@@ -89,10 +89,31 @@ footer{text-align:center;padding:30px;color:#9da8bd;font-size:12px}
 <textarea placeholder="Describe the image you want..." rows="3"></textarea>
 </section>
 <section id="video" class="panel">
+
 <h2>Video Studio</h2>
-<p>Your video creation workspace. A video generation service must be connected.</p>
-<textarea placeholder="Describe your video project..." rows="3"></textarea>
+<p>Create and organize your video projects with WONDER AI.</p>
+
+<div style="background:#101a30; padding:15px; border-radius:10px; color:white; margin:15px 0;">
+  <h3>Video Project Creator</h3>
+  <p>Describe the video you want to create.</p>
+
+  <textarea id="videoPrompt" placeholder="Example: Create a beautiful Bible story about David and Goliath..." rows="4" style="width:100%; box-sizing:border-box;"></textarea>
+
+  <p>Choose your video category:</p>
+  <select id="videoCategory" style="width:100%; padding:10px;">
+    <option>Bible Story</option>
+    <option>Animation</option>
+    <option>Educational Video</option>
+    <option>YouTube Video</option>
+    <option>Other</option>
+  </select>
+
+  <button onclick="alert('Your video project has been prepared. AI video generation is not connected yet.')" style="margin-top:12px; padding:12px; background:#d4af37; color:#101a30; border:0; border-radius:8px; font-weight:bold;">
+    Prepare Video Project
+  </button>
+</div>
 </section>
+  
 <section id="voice" class="panel">
 <h2>Voice Studio</h2>
 <p>Your future voice and narration workspace. A voice service must be connected.</p>
