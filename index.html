@@ -41,6 +41,24 @@ footer{text-align:center;padding:30px;color:#9da8bd;font-size:12px}
 <p class="status">Your studio is ready to be configured.</p>
 </section>
 
+<nav id="mainNavigation" style="background:#101a30; padding:15px; border-radius:12px; margin:15px 0; color:white;">
+
+  <h3 style="color:#d4af37;">WONDER AI MENU</h3>
+
+  <button onclick="showNewChat()" style="width:100%; padding:12px; margin:5px 0;">＋ New Chat</button>
+
+  <button onclick="showChatHistory()" style="width:100%; padding:12px; margin:5px 0;">💬 Chat History</button>
+
+  <button onclick="showMyProjects()" style="width:100%; padding:12px; margin:5px 0;">📁 My Projects</button>
+
+  <button onclick="showSavedProjects()" style="width:100%; padding:12px; margin:5px 0;">⭐ Saved Projects</button>
+
+  <button onclick="showSettings()" style="width:100%; padding:12px; margin:5px 0;">⚙️ Settings</button>
+
+</nav>
+
+<div id="navigationContent" style="background:#101a30; color:white; padding:15px; border-radius:12px; margin:15px 0; display:none;"></div>
+  
 <h2>Explore Your AI Studio</h2>
 <div class="grid">
 <button class="card" onclick="openPanel('chat')">
@@ -316,6 +334,38 @@ function previewVideoImage(event) {
   preview.src = URL.createObjectURL(file);
   preview.style.display = 'block';
 }
+  
+
+function showNewChat() {
+  document.getElementById('chatMessages').innerHTML = '<p>Welcome to a new WONDER AI conversation!</p>';
+  document.getElementById('chatInput').value = '';
+  document.getElementById('navigationContent').style.display = 'none';
+  document.getElementById('chat').scrollIntoView({behavior:'smooth'});
+}
+
+function showChatHistory() {
+  const area = document.getElementById('navigationContent');
+  area.style.display = 'block';
+  area.innerHTML = '<h3>Chat History</h3><p>Your saved conversations will appear here when history storage is added.</p>';
+}
+
+function showMyProjects() {
+  const area = document.getElementById('navigationContent');
+  area.style.display = 'block';
+  area.innerHTML = '<h3>My Projects</h3><p>Your video, image, Bible story and YouTube projects will appear here.</p>';
+}
+
+function showSavedProjects() {
+  const area = document.getElementById('navigationContent');
+  area.style.display = 'block';
+  area.innerHTML = '<h3>Saved Projects</h3><p>Your favourite saved projects will appear here.</p>';
+}
+
+function showSettings() {
+  const area = document.getElementById('navigationContent');
+  area.style.display = 'block';
+  area.innerHTML = '<h3>WONDER AI Settings</h3><p>Studio settings and preferences will appear here.</p>';
+  }
 </script>  
 </body>
   </html>
