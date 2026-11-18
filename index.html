@@ -69,37 +69,65 @@ footer{text-align:center;padding:30px;color:#9da8bd;font-size:12px}
 </button>
 </div>
 
+
 <section id="chat" class="panel">
-  <h2>AI Chat</h2>
-  <p>Your personal AI assistant is ready for your questions.</p>
 
-  <div id="chatMessages" style="margin:15px 0; padding:12px; background:#101a30; border-radius:10px; color:white;">
-    <p>Welcome to WONDER AI! How can I help you today?</p>
-  </div>
+<h2>AI Chat</h2>
+<p>Chat with WONDER AI using text or your voice.</p>
 
-  <textarea id="chatInput" placeholder="Write your question here..." rows="3" style="width:100%; box-sizing:border-box;"></textarea>
+<div id="chatMessages" style="background:#101a30; color:white; padding:15px; border-radius:10px; min-height:150px; margin-bottom:12px;">
+  <p>WONDER AI: Hello! How can I help you today?</p>
+</div>
 
-  <button onclick="sendMessage()" style="margin-top:10px; padding:12px 24px; background:#d4af37; color:#101a30; border:0; border-radius:8px; font-weight:bold;">
+<textarea id="chatInput" placeholder="Write or speak your message here..." rows="4" style="width:100%; box-sizing:border-box;"></textarea>
+
+<div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
+
+  <button onclick="sendMessage()" style="padding:12px; background:#d4af37; color:#101a30; border:0; border-radius:8px; font-weight:bold;">
     Send
   </button>
+
+  <button onclick="startVoiceInput()" style="padding:12px; background:#243653; color:white; border:0; border-radius:8px;">
+    🎤 Speak
+  </button>
+
+  <button onclick="stopVoiceInput()" style="padding:12px; background:#243653; color:white; border:0; border-radius:8px;">
+    Stop Listening
+  </button>
+
+  <button onclick="stopSpeaking()" style="padding:12px; background:#243653; color:white; border:0; border-radius:8px;">
+    Stop Speaking
+  </button>
+
+</div>
+
+<p id="voiceStatus" style="color:#d4af37; margin-top:10px;">
+  Voice features are ready when supported by your browser.
+</p>
+
 </section>
+  
 <section id="image" class="panel">
 <h2>Image Studio</h2>
 <p>Your image creation workspace. An image generation service must be connected before images can be generated.</p>
 <textarea placeholder="Describe the image you want..." rows="3"></textarea>
 </section>
+
 <section id="video" class="panel">
 
 <h2>Video Studio</h2>
 <p>Create and organize your video projects with WONDER AI.</p>
 
 <div style="background:#101a30; padding:15px; border-radius:10px; color:white; margin:15px 0;">
-  <h3>Video Project Creator</h3>
-  <p>Describe the video you want to create.</p>
 
-  <textarea id="videoPrompt" placeholder="Example: Create a beautiful Bible story about David and Goliath..." rows="4" style="width:100%; box-sizing:border-box;"></textarea>
+  <h3>Video Project Creator</h3>
+
+  <p>Describe the complete video you want to create, including movements and camera actions:</p>
+
+  <textarea id="videoPrompt" placeholder="Describe everything here. Example: Turn my uploaded picture into a 15-second cinematic video. Make the person smile, turn gently towards the camera and wave. Add a beautiful background and smooth camera movement..." rows="6" style="width:100%; box-sizing:border-box;"></textarea>
 
   <p>Choose your video category:</p>
+
   <select id="videoCategory" style="width:100%; padding:10px;">
     <option>Bible Story</option>
     <option>Animation</option>
@@ -107,18 +135,30 @@ footer{text-align:center;padding:30px;color:#9da8bd;font-size:12px}
     <option>YouTube Video</option>
     <option>Other</option>
   </select>
+
+  <p>Choose video duration:</p>
+
+  <select id="videoDuration" style="width:100%; padding:10px;">
+    <option value="5">5 seconds</option>
+    <option value="10" selected>10 seconds</option>
+    <option value="15">15 seconds</option>
+    <option value="30">30 seconds</option>
+    <option value="60">60 seconds</option>
+  </select>
+
   <p>Upload an image to turn into a video:</p>
+
   <input type="file" id="videoImage" accept="image/*" onchange="previewVideoImage(event)" style="width:100%; color:white;">
 
   <img id="videoImagePreview" alt="Selected image preview" style="display:none; width:100%; max-width:300px; margin-top:12px; border-radius:10px;">
 
-  <p>Describe how you want the image to move:</p>
-  <textarea id="imageMotionPrompt" placeholder="Example: Make the person gently turn toward the camera..." rows="3" style="width:100%; box-sizing:border-box;"></textarea>
   <button onclick="alert('Your video project has been prepared. AI video generation is not connected yet.')" style="margin-top:12px; padding:12px; background:#d4af37; color:#101a30; border:0; border-radius:8px; font-weight:bold;">
     Prepare Video Project
   </button>
+
 </div>
-</section>
+    </section>
+  
   
 <section id="voice" class="panel">
 <h2>Voice Studio</h2>
@@ -156,6 +196,9 @@ document.getElementById(id).scrollIntoView({behavior:'smooth'});
 </script>
   
 <script>
+
+let voiceRecognition;
+
 function sendMessage() {
   const input = document.getElementById('chatInput');
   const messages = document.getElementById('chatMessages');
@@ -170,12 +213,98 @@ function sendMessage() {
   userMessage.textContent = 'You: ' + question;
   messages.appendChild(userMessage);
 
-  const reply = document.createElement('p');
-  reply.textContent = 'WONDER AI: Your message has been received. The AI connection is not yet configured, so I cannot generate an answer yet.';
+  const reply = document.createElement('div');
+  reply.style.margin = '12px 0';
+
+  const replyText = document.createElement('p');
+  replyText.textContent = 'WONDER AI: Your message has been received. The AI connection is not yet configured, so I cannot generate an answer yet.';
+
+  const speakerButton = document.createElement('button');
+  speakerButton.textContent = '🔊 Listen';
+  speakerButton.style.padding = '8px 12px';
+  speakerButton.style.background = '#d4af37';
+  speakerButton.style.border = '0';
+  speakerButton.style.borderRadius = '8px';
+
+  speakerButton.onclick = function() {
+    speakReply(replyText.textContent.replace('WONDER AI: ', ''));
+  };
+
+  reply.appendChild(replyText);
+  reply.appendChild(speakerButton);
   messages.appendChild(reply);
 
   input.value = '';
 }
+
+function speakReply(text) {
+  if (!('speechSynthesis' in window)) {
+    alert('Voice reading is not supported by this browser.');
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+
+  const speech = new SpeechSynthesisUtterance(text);
+  speech.lang = navigator.language || 'en-US';
+
+  window.speechSynthesis.speak(speech);
+}
+
+function stopSpeaking() {
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+  }
+}
+
+function startVoiceInput() {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert('Voice typing is not supported by this browser.');
+    return;
+  }
+
+  voiceRecognition = new SpeechRecognition();
+  voiceRecognition.lang = 'en-US';
+  voiceRecognition.continuous = false;
+  voiceRecognition.interimResults = true;
+
+  const input = document.getElementById('chatInput');
+  const status = document.getElementById('voiceStatus');
+
+  voiceRecognition.onstart = function() {
+    status.textContent = 'Listening... Speak now.';
+  };
+
+  voiceRecognition.onresult = function(event) {
+    let transcript = '';
+
+    for (let i = 0; i < event.results.length; i++) {
+      transcript += event.results[i][0].transcript;
+    }
+
+    input.value = transcript;
+  };
+
+  voiceRecognition.onerror = function() {
+    status.textContent = 'Voice recognition encountered a problem. Please try again.';
+  };
+
+  voiceRecognition.onend = function() {
+    status.textContent = 'Voice input stopped.';
+  };
+
+  voiceRecognition.start();
+}
+
+function stopVoiceInput() {
+  if (voiceRecognition) {
+    voiceRecognition.stop();
+  }
+  }
+  
 </script>
 <script>
 function previewVideoImage(event) {
