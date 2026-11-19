@@ -451,11 +451,118 @@ function openSavedChat(id) {
   document.getElementById('navigationContent').style.display = 'none';
     }
 
+function loadMyProjects() {
+  try {
+    return JSON.parse(localStorage.getItem('wonderAIProjects')) || [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function saveMyProjects(projects) {
+  localStorage.setItem('wonderAIProjects', JSON.stringify(projects));
+}
+
 function showMyProjects() {
   const area = document.getElementById('navigationContent');
   area.style.display = 'block';
-  area.innerHTML = '<h3>My Projects</h3><p>Your video, image, Bible story and YouTube projects will appear here.</p>';
-}
+
+  const projects = loadMyProjects();
+
+  area.innerHTML = `
+    <h3>📁 My Projects</h3>
+
+    <h4>Create a New Project</h4>
+
+    <input id="projectTitle" placeholder="Enter project title">
+
+    <select id="projectCategory" style="width:100%;padding:12px;margin-top:10px;">
+      <option>Video Project</option>
+      <option>Image Project</option>
+      <option>Bible Story</option>
+      <option>YouTube Content</option>
+      <option>Other</option>
+    </select>
+
+    <textarea id="projectDescription"
+      placeholder="Describe or write your project here..."
+      rows="5"></textarea>
+
+    <button id="saveProjectButton" class="action">
+      Save Project
+    </button>
+
+    <hr>
+
+    <h4>Your Saved Projects</h4>
+
+    <div id="savedProjectsList"></div>
+  `;
+
+  document.getElementById('saveProjectButton').onclick = function() {
+    const title = document.getElementById('projectTitle').value.trim();
+    const category = document.getElementById('projectCategory').value;
+    const description = document.getElementById('projectDescription').value.trim();
+
+    if (!title || !description) {
+      alert('Please enter a project title and description.');
+      return;
+    }
+
+    const projects = loadMyProjects();
+
+    projects.push({
+      id: Date.now().toString(),
+      title: title,
+      category: category,
+      description: description,
+      date: new Date().toLocaleString()
+    });
+
+    saveMyProjects(projects);
+
+    alert('Your project has been saved successfully!');
+
+    showMyProjects();
+  };
+
+  const list = document.getElementById('savedProjectsList');
+
+  if (projects.length === 0) {
+    list.textContent = 'No saved projects yet. Create your first project above!';
+    return;
+  }
+
+  projects.slice().reverse().forEach(project => {
+    const button = document.createElement('button');
+
+    button.textContent = project.title + ' — ' + project.category;
+    button.style.cssText =
+      'display:block;width:100%;padding:12px;margin:8px 0;text-align:left;border-radius:8px;';
+
+    button.onclick = function() {
+      const details = document.createElement('div');
+      const heading = document.createElement('h4');
+      const category = document.createElement('p');
+      const description = document.createElement('p');
+      const date = document.createElement('small');
+      const back = document.createElement('button');
+
+      heading.textContent = project.title;
+      category.textContent = project.category;
+      description.textContent = project.description;
+      date.textContent = 'Saved: ' + project.date;
+      back.textContent = '← Back to My Projects';
+
+      back.onclick = showMyProjects;
+
+      details.append(heading, category, description, date, back);
+      area.replaceChildren(details);
+    };
+
+    list.appendChild(button);
+  });
+  }
 
 function showSavedProjects() {
   const area = document.getElementById('navigationContent');
