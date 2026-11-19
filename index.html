@@ -673,16 +673,32 @@ function showSavedProjects() {
       const description = document.createElement('p');
       const date = document.createElement('small');
       const back = document.createElement('button');
+      const deleteButton = document.createElement('button');
 
       heading.textContent = project.title;
       category.textContent = project.category;
       description.textContent = project.description;
       date.textContent = 'Saved: ' + project.date;
       back.textContent = '← Back to Saved Projects';
+      deleteButton.textContent = '🗑️ Delete Project';
 
       back.onclick = showSavedProjects;
+      deleteButton.onclick = function() {
+  const confirmDelete = confirm('Are you sure you want to delete this project?');
 
-      details.append(heading, category, description, date, back);
+  if (!confirmDelete) return;
+
+  const projects = loadMyProjects();
+  const updatedProjects = projects.filter(item => item.id !== project.id);
+
+  saveMyProjects(updatedProjects);
+
+  alert('Project deleted successfully!');
+
+  showSavedProjects();
+};
+
+      details.append(heading, category, description, date, deleteButton, back);
       area.replaceChildren(details);
     };
 
