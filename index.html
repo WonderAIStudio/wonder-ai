@@ -548,7 +548,7 @@ function showMyProjects() {
       const date = document.createElement('small');
       const edit = document.createElement('button');
       const back = document.createElement('button');
-
+      const deleteButton = document.createElement('button');
       heading.textContent = project.title;
       category.textContent = project.category;
       description.textContent = project.description;
@@ -556,6 +556,7 @@ function showMyProjects() {
 
       edit.textContent = '✏️ Edit Project';
       back.textContent = '← Back to My Projects';
+      deleteButton.textContent = '🗑️ Delete Project';
 
       edit.onclick = function() {
         area.innerHTML = `
@@ -621,8 +622,22 @@ function showMyProjects() {
       };
 
       back.onclick = showMyProjects;
+      deleteButton.onclick = function() {
+  const confirmDelete = confirm('Are you sure you want to delete this project?');
 
-      details.append(heading, category, description, date, edit, back);
+  if (!confirmDelete) return;
+
+  const projects = loadMyProjects();
+  const updatedProjects = projects.filter(item => item.id !== project.id);
+
+  saveMyProjects(updatedProjects);
+
+  alert('Project deleted successfully!');
+
+  showMyProjects();
+};
+
+      details.append(heading, category, description, date, edit, deleteButton, back);
       area.replaceChildren(details);
     };
 
