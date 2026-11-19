@@ -546,24 +546,90 @@ function showMyProjects() {
       const category = document.createElement('p');
       const description = document.createElement('p');
       const date = document.createElement('small');
+      const edit = document.createElement('button');
       const back = document.createElement('button');
 
       heading.textContent = project.title;
       category.textContent = project.category;
       description.textContent = project.description;
       date.textContent = 'Saved: ' + project.date;
+
+      edit.textContent = '✏️ Edit Project';
       back.textContent = '← Back to My Projects';
+
+      edit.onclick = function() {
+        area.innerHTML = `
+          <h3>✏️ Edit Project</h3>
+
+          <input id="editProjectTitle" placeholder="Project title">
+
+          <select id="editProjectCategory" style="width:100%;padding:12px;margin-top:10px;">
+            <option>Video Project</option>
+            <option>Image Project</option>
+            <option>Bible Story</option>
+            <option>YouTube Content</option>
+            <option>Other</option>
+          </select>
+
+          <textarea id="editProjectDescription"
+            placeholder="Project description"
+            rows="5"></textarea>
+
+          <button id="updateProjectButton" class="action">
+            Save Changes
+          </button>
+
+          <button id="cancelEditButton">
+            Cancel
+          </button>
+        `;
+
+        document.getElementById('editProjectTitle').value = project.title;
+        document.getElementById('editProjectCategory').value = project.category;
+        document.getElementById('editProjectDescription').value = project.description;
+
+        document.getElementById('updateProjectButton').onclick = function() {
+          const title = document.getElementById('editProjectTitle').value.trim();
+          const category = document.getElementById('editProjectCategory').value;
+          const description = document.getElementById('editProjectDescription').value.trim();
+
+          if (!title || !description) {
+            alert('Please enter a project title and description.');
+            return;
+          }
+
+          const updatedProjects = loadMyProjects();
+          const savedProject = updatedProjects.find(item => item.id === project.id);
+
+          if (!savedProject) {
+            alert('Project not found.');
+            return;
+          }
+
+          savedProject.title = title;
+          savedProject.category = category;
+          savedProject.description = description;
+
+          saveMyProjects(updatedProjects);
+
+          alert('Your project has been updated successfully!');
+
+          showMyProjects();
+        };
+
+        document.getElementById('cancelEditButton').onclick = showMyProjects;
+      };
 
       back.onclick = showMyProjects;
 
-      details.append(heading, category, description, date, back);
+      details.append(heading, category, description, date, edit, back);
       area.replaceChildren(details);
     };
 
     list.appendChild(button);
   });
   }
-
+  
 function showSavedProjects() {
   const area = document.getElementById('navigationContent');
   area.style.display = 'block';
