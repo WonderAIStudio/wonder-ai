@@ -214,7 +214,55 @@ document.getElementById(id).scrollIntoView({behavior:'smooth'});
 </script>
   
 <script>
+let currentChatId = null;
+let chatHistory = [];
 
+function loadSavedChats() {
+  try {
+    const saved = localStorage.getItem('wonderAIChatHistory');
+    chatHistory = saved ? JSON.parse(saved) : [];
+
+    if (!Array.isArray(chatHistory)) {
+      chatHistory = [];
+    }
+  } catch (error) {
+    chatHistory = [];
+  }
+}
+
+function saveChatHistory() {
+  localStorage.setItem(
+    'wonderAIChatHistory',
+    JSON.stringify(chatHistory)
+  );
+}
+
+function saveCurrentChat(userText, replyText) {
+  let chat = chatHistory.find(item => item.id === currentChatId);
+
+  if (!chat) {
+    currentChatId = Date.now().toString();
+
+    chat = {
+      id: currentChatId,
+      title: userText.substring(0, 40),
+      messages: []
+    };
+
+    chatHistory.push(chat);
+  }
+
+  chat.messages.push(
+    { role: 'user', text: userText },
+    { role: 'assistant', text: replyText }
+  );
+
+  chat.updatedAt = new Date().toISOString();
+
+  saveChatHistory();
+}
+
+loadSavedChats();
 let voiceRecognition;
 
 function sendMessage() {
@@ -236,7 +284,10 @@ function sendMessage() {
 
   const replyText = document.createElement('p');
   replyText.textContent = 'WONDER AI: Your message has been received. The AI connection is not yet configured, so I cannot generate an answer yet.';
-
+saveCurrentChat(
+  question,
+  replyText.textContent.replace('WONDER AI: ', '')
+);
   const speakerButton = document.createElement('button');
   speakerButton.textContent = '🔊 Listen';
   speakerButton.style.padding = '8px 12px';
@@ -337,6 +388,8 @@ function previewVideoImage(event) {
   
 
 function showNewChat() {
+  currentChatId = null;
+  
   openPanel('chat');
 
   document.getElementById('chatMessages').innerHTML =
@@ -352,8 +405,51 @@ function showNewChat() {
 function showChatHistory() {
   const area = document.getElementById('navigationContent');
   area.style.display = 'block';
-  area.innerHTML = '<h3>Chat History</h3><p>Your saved conversations will appear here when history storage is added.</p>';
+  area.innerHTML = '<h3>Chat History</h3>';
+
+  if (chatHistory.length === 0) {
+    area.innerHTML += '<p>No saved conversations yet. Start a new chat!</p>';
+    return;
+  }
+
+  chatHistory.slice().reverse().forEach(chat => {
+    const button = document.createElement('button');
+
+    button.textContent = chat.title || 'Untitled conversation';
+    button.style.cssText =
+      'display:block;width:100%;padding:12px;margin:8px 0;text-align:left;border-radius:8px;';
+
+    button.onclick = function() {
+      openSavedChat(chat.id);
+    };
+
+    area.appendChild(button);
+  });
 }
+
+function openSavedChat(id) {
+  const chat = chatHistory.find(item => item.id === id);
+
+  if (!chat) return;
+
+  currentChatId = id;
+
+  openPanel('chat');
+
+  const messages = document.getElementById('chatMessages');
+  messages.innerHTML = '';
+
+  chat.messages.forEach(message => {
+    const paragraph = document.createElement('p');
+    paragraph.textContent =
+      (message.role === 'user' ? 'You: ' : 'WONDER AI: ') + message.text;
+
+    messages.appendChild(paragraph);
+  });
+
+  document.getElementById('chatInput').value = '';
+  document.getElementById('navigationContent').style.display = 'none';
+    }
 
 function showMyProjects() {
   const area = document.getElementById('navigationContent');
