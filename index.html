@@ -567,8 +567,47 @@ function showMyProjects() {
 function showSavedProjects() {
   const area = document.getElementById('navigationContent');
   area.style.display = 'block';
-  area.innerHTML = '<h3>Saved Projects</h3><p>Your favourite saved projects will appear here.</p>';
-}
+
+  const projects = loadMyProjects();
+
+  area.innerHTML = '<h3>⭐ Saved Projects</h3>';
+
+  if (projects.length === 0) {
+    area.innerHTML += '<p>No saved projects yet. Save a project in My Projects first!</p>';
+    return;
+  }
+
+  projects.slice().reverse().forEach(project => {
+    const button = document.createElement('button');
+
+    button.textContent = '⭐ ' + project.title + ' — ' + project.category;
+
+    button.style.cssText =
+      'display:block;width:100%;padding:12px;margin:8px 0;text-align:left;border-radius:8px;';
+
+    button.onclick = function() {
+      const details = document.createElement('div');
+      const heading = document.createElement('h4');
+      const category = document.createElement('p');
+      const description = document.createElement('p');
+      const date = document.createElement('small');
+      const back = document.createElement('button');
+
+      heading.textContent = project.title;
+      category.textContent = project.category;
+      description.textContent = project.description;
+      date.textContent = 'Saved: ' + project.date;
+      back.textContent = '← Back to Saved Projects';
+
+      back.onclick = showSavedProjects;
+
+      details.append(heading, category, description, date, back);
+      area.replaceChildren(details);
+    };
+
+    area.appendChild(button);
+  });
+  }
 
 function showSettings() {
   const area = document.getElementById('navigationContent');
