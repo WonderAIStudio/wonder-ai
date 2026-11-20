@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,740 +13,516 @@ header{padding:22px 18px;background:#101831;border-bottom:1px solid #b58b37}
 header p{color:#b8c1d4;margin:7px 0}
 main{padding:20px;max-width:850px;margin:auto}
 h2{color:#f0c66e}
+h3,h4{color:#f0c66e}
+p{line-height:1.5}
 .intro{background:linear-gradient(135deg,#18294e,#10152d);padding:24px;border-radius:17px;margin-bottom:22px}
 .intro p{color:#d0d7e7;line-height:1.6}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
 .card{background:#121d37;border:1px solid #34415d;border-radius:14px;padding:18px;min-height:125px;cursor:pointer;color:white;text-align:left}
 .card:active{background:#26385d}
 .card strong{display:block;color:#f0c66e;font-size:16px;margin-bottom:10px}
 .card span{font-size:13px;color:#c4ccdc;line-height:1.5}
 .panel{display:none;background:#121d37;padding:20px;border-radius:15px;margin-top:20px}
 .panel.active{display:block}
-button.action{background:#d6a94e;color:#111;padding:12px 17px;border:0;border-radius:9px;font-weight:bold;margin-top:12px}
-input,textarea{width:100%;padding:13px;border-radius:9px;border:1px solid #53617b;background:#080d20;color:white;margin-top:9px}
+button{cursor:pointer}
+button.action,.action{background:#d6a94e;color:#111;padding:12px 17px;border:0;border-radius:9px;font-weight:bold;margin-top:12px}
+button.secondary{background:#243653;color:white;padding:11px 13px;border:0;border-radius:8px;margin:5px 5px 0 0}
+input,textarea,select{width:100%;padding:13px;border-radius:9px;border:1px solid #53617b;background:#080d20;color:white;margin-top:9px;font:inherit}
+input[type=file]{padding:10px}
+label{display:block;margin-top:13px;color:#dce3f1}
 footer{text-align:center;padding:30px;color:#9da8bd;font-size:12px}
 .status{color:#f0c66e;font-size:13px}
+.workspace{background:#101a30;padding:15px;border-radius:10px;margin:15px 0}
+.messages{background:#101a30;color:white;padding:15px;border-radius:10px;min-height:150px;margin-bottom:12px;overflow-wrap:anywhere}
+.message{padding:10px 0;border-bottom:1px solid #293650}
+.message:last-child{border-bottom:0}
+.message img,.preview-image{display:block;width:100%;max-width:280px;max-height:280px;object-fit:contain;margin:10px 0;border-radius:9px;background:#080d20}
+.file-chip{display:inline-block;background:#263653;padding:7px 10px;border-radius:7px;margin:5px 5px 0 0;font-size:13px;overflow-wrap:anywhere}
+.small-note{color:#b8c1d4;font-size:13px}
+.button-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+hr{border:0;border-top:1px solid #34415d;margin:20px 0}
+@media(max-width:520px){main{padding:14px}.grid{grid-template-columns:1fr}.panel{padding:15px}.intro{padding:18px}}
 </style>
 </head>
 <body>
 <header>
-<div class="logo">✦ WONDER AI</div>
-<p>Your Personal AI Studio</p>
+  <div class="logo">✦ WONDER AI</div>
+  <p>Your Personal AI Studio</p>
 </header>
+
 <main>
 <section class="intro">
-<h2>Welcome to WONDER AI</h2>
-<p>Your creative space for artificial intelligence, Bible storytelling, images, videos and more.</p>
-<p class="status">Your studio is ready to be configured.</p>
+  <h2>Welcome to WONDER AI</h2>
+  <p>Your creative space for artificial intelligence, Bible storytelling, images, videos and more.</p>
+  <p class="status">Your studio is ready to be configured.</p>
 </section>
 
-<nav id="mainNavigation" style="background:#101a30; padding:15px; border-radius:12px; margin:15px 0; color:white;">
-
-  <h3 style="color:#d4af37;">WONDER AI MENU</h3>
-
-  <button onclick="showNewChat()" style="width:100%; padding:12px; margin:5px 0;">＋ New Chat</button>
-
-  <button onclick="showChatHistory()" style="width:100%; padding:12px; margin:5px 0;">💬 Chat History</button>
-
-  <button onclick="showMyProjects()" style="width:100%; padding:12px; margin:5px 0;">📁 My Projects</button>
-
-  <button onclick="showSavedProjects()" style="width:100%; padding:12px; margin:5px 0;">⭐ Saved Projects</button>
-
-  <button onclick="showSettings()" style="width:100%; padding:12px; margin:5px 0;">⚙️ Settings</button>
-
+<nav id="mainNavigation" class="workspace">
+  <h3>WONDER AI MENU</h3>
+  <button class="secondary" style="width:100%" onclick="showNewChat()">＋ New Chat</button>
+  <button class="secondary" style="width:100%" onclick="showChatHistory()">💬 Chat History</button>
+  <button class="secondary" style="width:100%" onclick="showMyProjects()">📁 My Projects</button>
+  <button class="secondary" style="width:100%" onclick="showSavedProjects()">⭐ Saved Projects</button>
+  <button class="secondary" style="width:100%" onclick="showSettings()">⚙️ Settings</button>
 </nav>
+<div id="navigationContent" class="workspace" style="display:none"></div>
 
-<div id="navigationContent" style="background:#101a30; color:white; padding:15px; border-radius:12px; margin:15px 0; display:none;"></div>
-  
 <h2>Explore Your AI Studio</h2>
 <div class="grid">
-<button class="card" onclick="openPanel('chat')">
-<strong>✦ AI Chat</strong><span>Ask questions and get assistance.</span>
-</button>
-<button class="card" onclick="openPanel('image')">
-<strong>🎨 Image Studio</strong><span>Plan and create AI image projects.</span>
-</button>
-<button class="card" onclick="openPanel('video')">
-<strong>🎬 Video Studio</strong><span>Prepare creative video projects.</span>
-</button>
-<button class="card" onclick="openPanel('voice')">
-<strong>🎙 Voice Studio</strong><span>Explore voice and narration projects.</span>
-</button>
-<button class="card" onclick="openPanel('bible')">
-<strong>📖 Bible Story Studio</strong><span>Develop Bible stories and scripts.</span>
-</button>
-<button class="card" onclick="openPanel('youtube')">
-<strong>▶ YouTube Studio</strong><span>Plan videos and channel content.</span>
-</button>
-<button class="card" onclick="openPanel('coding')">
-<strong>💻 AI Coding Assistant</strong><span>Plan and organize coding projects.</span>
-</button>
-<button class="card" onclick="openPanel('settings')">
-<strong>⚙ Settings</strong><span>Studio information and setup.</span>
-</button>
+  <button class="card" onclick="openPanel('chat')"><strong>✦ AI Chat</strong><span>Chat using text, voice, images and documents.</span></button>
+  <button class="card" onclick="openPanel('image')"><strong>🎨 Image Studio</strong><span>Prepare image projects with reference pictures.</span></button>
+  <button class="card" onclick="openPanel('video')"><strong>🎬 Video Studio</strong><span>Prepare and organize creative video projects.</span></button>
+  <button class="card" onclick="openPanel('voice')"><strong>🎙 Voice Studio</strong><span>Explore voice and narration projects.</span></button>
+  <button class="card" onclick="openPanel('bible')"><strong>📖 Bible Story Studio</strong><span>Develop Bible stories and scripts.</span></button>
+  <button class="card" onclick="openPanel('youtube')"><strong>▶ YouTube Studio</strong><span>Plan videos and channel content.</span></button>
+  <button class="card" onclick="openPanel('coding')"><strong>💻 AI Coding Assistant</strong><span>Plan and organize coding projects.</span></button>
+  <button class="card" onclick="openPanel('settings')"><strong>⚙ Settings</strong><span>Studio information and setup.</span></button>
 </div>
-
 
 <section id="chat" class="panel">
+  <h2>AI Chat</h2>
+  <p>Write a message, use voice typing, or attach an image or document.</p>
+  <div id="chatMessages" class="messages" aria-live="polite">
+    <p>WONDER AI: Hello! How can I help you today?</p>
+  </div>
+  <label for="chatInput">Your message</label>
+  <textarea id="chatInput" placeholder="Write or speak your message here..." rows="4"></textarea>
 
-<h2>AI Chat</h2>
-<p>Chat with WONDER AI using text or your voice.</p>
+  <label for="chatAttachments">Attach images or documents</label>
+  <input type="file" id="chatAttachments" accept="image/*,.pdf,.doc,.docx,.txt" multiple>
+  <div id="chatAttachmentPreview" class="small-note">No files selected.</div>
+  <p class="small-note">Images can be previewed in this browser. Document files can be attached and listed. AI understanding of attachments will become available after a compatible AI service is connected.</p>
 
-<div id="chatMessages" style="background:#101a30; color:white; padding:15px; border-radius:10px; min-height:150px; margin-bottom:12px;">
-  <p>WONDER AI: Hello! How can I help you today?</p>
-</div>
-
-<textarea id="chatInput" placeholder="Write or speak your message here..." rows="4" style="width:100%; box-sizing:border-box;"></textarea>
-
-<div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
-
-  <button onclick="sendMessage()" style="padding:12px; background:#d4af37; color:#101a30; border:0; border-radius:8px; font-weight:bold;">
-    Send
-  </button>
-
-  <button onclick="startVoiceInput()" style="padding:12px; background:#243653; color:white; border:0; border-radius:8px;">
-    🎤 Speak
-  </button>
-
-  <button onclick="stopVoiceInput()" style="padding:12px; background:#243653; color:white; border:0; border-radius:8px;">
-    Stop Listening
-  </button>
-
-  <button onclick="stopSpeaking()" style="padding:12px; background:#243653; color:white; border:0; border-radius:8px;">
-    Stop Speaking
-  </button>
-
-</div>
-
-<p id="voiceStatus" style="color:#d4af37; margin-top:10px;">
-  Voice features are ready when supported by your browser.
-</p>
-
+  <div class="button-row">
+    <button class="action" onclick="sendMessage()">Send</button>
+    <button class="secondary" onclick="startVoiceInput()">🎤 Speak</button>
+    <button class="secondary" onclick="stopVoiceInput()">Stop Listening</button>
+    <button class="secondary" onclick="stopSpeaking()">Stop Speaking</button>
+    <button class="secondary" onclick="clearChatAttachments()">Remove Attachments</button>
+    <button class="secondary" onclick="downloadCurrentChat()">Download Chat</button>
+  </div>
+  <p id="voiceStatus" class="status">Voice features are ready when supported by your browser.</p>
 </section>
-  
+
 <section id="image" class="panel">
-<h2>Image Studio</h2>
-<p>Your image creation workspace. An image generation service must be connected before images can be generated.</p>
-<textarea placeholder="Describe the image you want..." rows="3"></textarea>
+  <h2>Image Studio</h2>
+  <p>Prepare an image project using a text prompt and an optional reference image.</p>
+  <div class="workspace">
+    <label for="imageTitle">Project title</label>
+    <input id="imageTitle" type="text" placeholder="Enter image project title">
+    <label for="imagePrompt">Describe the image you want</label>
+    <textarea id="imagePrompt" rows="5" placeholder="Describe the image, style, background, lighting, colours and other details..."></textarea>
+    <label for="imageReference">Upload a reference image</label>
+    <input id="imageReference" type="file" accept="image/*" onchange="previewImageReference(event)">
+    <img id="imageReferencePreview" class="preview-image" alt="Reference image preview" style="display:none">
+    <div class="button-row">
+      <button class="action" onclick="prepareImageProject()">Prepare Image Project</button>
+      <button class="secondary" onclick="saveImageProject()">Save to My Projects</button>
+      <button class="secondary" onclick="downloadImagePrompt()">Download Prompt</button>
+      <button class="secondary" onclick="clearImageStudio()">Clear</button>
+    </div>
+    <p class="small-note">The prompt and reference image can be prepared here. Actual AI image generation and downloading generated images require an image-generation service to be connected.</p>
+    <p id="imageStatus" class="status"></p>
+  </div>
 </section>
 
 <section id="video" class="panel">
-
-<h2>Video Studio</h2>
-<p>Create and organize your video projects with WONDER AI.</p>
-
-<div style="background:#101a30; padding:15px; border-radius:10px; color:white; margin:15px 0;">
-
-  <h3>Video Project Creator</h3>
-
-  <p>Enter your video project title:</p>
-  <input type="text" id="videoTitle" placeholder="Enter video project title" style="width:100%; padding:12px; box-sizing:border-box;">
-
-  <p>Describe the complete video you want to create, including movements and camera actions:</p>
-
-  <textarea id="videoPrompt" placeholder="Describe everything here. Example: Turn my uploaded picture into a 15-second cinematic video. Add a beautiful background and smooth camera movement..." rows="6" style="width:100%; box-sizing:border-box;"></textarea>
-
-  <p>Choose your video category:</p>
-
-  <select id="videoCategory" style="width:100%; padding:10px;">
-    <option>Bible Story</option>
-    <option>Animation</option>
-    <option>Educational Video</option>
-    <option>YouTube Video</option>
-    <option>Other</option>
-  </select>
-
-  <p>Choose video duration:</p>
-
-  <select id="videoDuration" style="width:100%; padding:10px;">
-    <option value="5">5 seconds</option>
-    <option value="10" selected>10 seconds</option>
-    <option value="15">15 seconds</option>
-    <option value="30">30 seconds</option>
-    <option value="60">60 seconds</option>
-  </select>
-
-  <p>Upload an image to turn into a video:</p>
-
-  <input type="file" id="videoImage" accept="image/*" onchange="previewVideoImage(event)" style="width:100%; color:white;">
-
-  <img id="videoImagePreview" alt="Selected image preview" style="display:none; width:100%; max-width:300px; margin-top:12px; border-radius:10px;">
-
-  <button onclick="alert('Your video project has been prepared. AI video generation is not connected yet.')" style="margin-top:12px; padding:12px; background:#d4af37; color:#101a30; border:0; border-radius:8px; font-weight:bold;">
-    Prepare Video Project
-  </button>
-
-  <button onclick="saveVideoProject()" style="margin-top:12px; padding:12px; width:100%; background:#d4af37; color:#101a30; border:0; border-radius:8px; font-weight:bold;">
-    Save to My Projects
-  </button>
-
-</div>
+  <h2>Video Studio</h2>
+  <p>Create and organize your video projects with WONDER AI.</p>
+  <div class="workspace">
+    <label for="videoTitle">Video project title</label>
+    <input type="text" id="videoTitle" placeholder="Enter video project title">
+    <label for="videoPrompt">Describe the complete video, including movements and camera actions</label>
+    <textarea id="videoPrompt" placeholder="Example: Turn my uploaded picture into a 15-second cinematic video. Add a beautiful background and smooth camera movement..." rows="6"></textarea>
+    <label for="videoCategory">Video category</label>
+    <select id="videoCategory">
+      <option>Bible Story</option><option>Animation</option><option>Educational Video</option><option>YouTube Video</option><option>Other</option>
+    </select>
+    <label for="videoDuration">Video duration</label>
+    <select id="videoDuration">
+      <option value="5">5 seconds</option><option value="10" selected>10 seconds</option><option value="15">15 seconds</option><option value="30">30 seconds</option><option value="60">60 seconds</option>
+    </select>
+    <label for="videoImage">Upload a reference image</label>
+    <input type="file" id="videoImage" accept="image/*" onchange="previewVideoImage(event)">
+    <img id="videoImagePreview" class="preview-image" alt="Selected video reference image" style="display:none">
+    <div class="button-row">
+      <button class="action" onclick="prepareVideoProject()">Prepare Video Project</button>
+      <button class="secondary" onclick="saveVideoProject()">Save to My Projects</button>
+      <button class="secondary" onclick="downloadVideoPrompt()">Download Prompt</button>
+    </div>
+    <p class="small-note">Video project preparation and saving work locally. Actual AI video generation requires a video service to be connected.</p>
+    <p id="videoStatus" class="status"></p>
+  </div>
 </section>
-  
+
 <section id="voice" class="panel">
-<h2>Voice Studio</h2>
-<p>Your future voice and narration workspace. A voice service must be connected.</p>
+  <h2>Voice Studio</h2>
+  <p>Your voice and narration workspace. A compatible voice service is needed for AI voice generation.</p>
+  <textarea id="voiceText" rows="5" placeholder="Write the narration you want to prepare..."></textarea>
+  <div class="button-row">
+    <button class="action" onclick="downloadTextFile('wonder-ai-narration.txt', document.getElementById('voiceText').value)">Download Narration</button>
+    <button class="secondary" onclick="speakReply(document.getElementById('voiceText').value)">Read Aloud</button>
+    <button class="secondary" onclick="stopSpeaking()">Stop</button>
+  </div>
 </section>
+
 <section id="bible" class="panel">
-<h2>Bible Story Studio</h2>
-<p>Prepare Bible story ideas, scene outlines and narration scripts.</p>
-<textarea placeholder="Enter a Bible story idea..." rows="3"></textarea>
+  <h2>Bible Story Studio</h2>
+  <p>Prepare Bible story ideas, scene outlines and narration scripts.</p>
+  <textarea id="bibleText" placeholder="Enter a Bible story idea..." rows="5"></textarea>
+  <button class="action" onclick="downloadTextFile('wonder-ai-bible-story.txt',document.getElementById('bibleText').value)">Download Story</button>
 </section>
+
 <section id="youtube" class="panel">
-<h2>YouTube Studio</h2>
-<p>Plan your content for Iyanuoluwa Wonder Of God Tails.</p>
-<textarea placeholder="Enter your video idea..." rows="3"></textarea>
+  <h2>YouTube Studio</h2>
+  <p>Plan your content for Iyanuoluwa Wonder Of God Tails.</p>
+  <textarea id="youtubeText" placeholder="Enter your video idea, title or script..." rows="5"></textarea>
+  <button class="action" onclick="downloadTextFile('wonder-ai-youtube-content.txt',document.getElementById('youtubeText').value)">Download Content</button>
 </section>
+
 <section id="coding" class="panel">
-<h2>AI Coding Assistant</h2>
-<p>Your workspace for planning and organizing software projects.</p>
-<textarea placeholder="Describe what you want to build..." rows="3"></textarea>
+  <h2>AI Coding Assistant</h2>
+  <p>Your workspace for planning and organizing software projects.</p>
+  <textarea id="codingText" placeholder="Describe or write the code you want to save..." rows="6"></textarea>
+  <button class="action" onclick="downloadTextFile('wonder-ai-code.txt',document.getElementById('codingText').value)">Download Text</button>
 </section>
+
 <section id="settings" class="panel">
-<h2>Settings</h2>
-<p>WONDER AI</p>
-<p>Version 1.0 — Initial website interface.</p>
-<p>AI services: Not connected yet.</p>
+  <h2>Settings</h2>
+  <p>WONDER AI</p>
+  <p>Version 1.1 — Studio interface and local project tools.</p>
+  <p>AI services: Not connected yet.</p>
+  <p class="small-note">Your chat history and projects are stored in this browser on this device. They are not automatically backed up online.</p>
 </section>
 </main>
+
 <footer>WONDER AI © 2026 · Your Personal AI Studio</footer>
+
 <script>
 function openPanel(id){
-document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-document.getElementById(id).classList.add('active');
-document.getElementById(id).scrollIntoView({behavior:'smooth'});
-}
-</script>
-  
-<script>
-let currentChatId = null;
-let chatHistory = [];
-
-function loadSavedChats() {
-  try {
-    const saved = localStorage.getItem('wonderAIChatHistory');
-    chatHistory = saved ? JSON.parse(saved) : [];
-
-    if (!Array.isArray(chatHistory)) {
-      chatHistory = [];
-    }
-  } catch (error) {
-    chatHistory = [];
-  }
+  document.querySelectorAll('.panel').forEach(panel=>panel.classList.remove('active'));
+  const panel=document.getElementById(id);
+  if(!panel)return;
+  panel.classList.add('active');
+  document.getElementById('navigationContent').style.display='none';
+  panel.scrollIntoView({behavior:'smooth'});
 }
 
-function saveChatHistory() {
-  localStorage.setItem(
-    'wonderAIChatHistory',
-    JSON.stringify(chatHistory)
-  );
+let currentChatId=null;
+let chatHistory=[];
+let voiceRecognition=null;
+let selectedChatFiles=[];
+
+function loadSavedChats(){
+  try{
+    const saved=localStorage.getItem('wonderAIChatHistory');
+    chatHistory=saved?JSON.parse(saved):[];
+    if(!Array.isArray(chatHistory))chatHistory=[];
+  }catch(error){chatHistory=[];}
 }
-
-function saveCurrentChat(userText, replyText) {
-  let chat = chatHistory.find(item => item.id === currentChatId);
-
-  if (!chat) {
-    currentChatId = Date.now().toString();
-
-    chat = {
-      id: currentChatId,
-      title: userText.substring(0, 40),
-      messages: []
-    };
-
+function saveChatHistory(){
+  try{localStorage.setItem('wonderAIChatHistory',JSON.stringify(chatHistory));}
+  catch(error){alert('Your browser storage is full. Download important chats and remove older saved conversations.');}
+}
+function saveCurrentChat(userText,replyText,attachmentNames){
+  let chat=chatHistory.find(item=>item.id===currentChatId);
+  if(!chat){
+    currentChatId=Date.now().toString();
+    chat={id:currentChatId,title:(userText||attachmentNames.join(', ')||'New conversation').substring(0,40),messages:[]};
     chatHistory.push(chat);
   }
-
   chat.messages.push(
-    { role: 'user', text: userText },
-    { role: 'assistant', text: replyText }
+    {role:'user',text:userText,attachments:attachmentNames||[]},
+    {role:'assistant',text:replyText,attachments:[]}
   );
-
-  chat.updatedAt = new Date().toISOString();
-
+  chat.updatedAt=new Date().toISOString();
   saveChatHistory();
 }
-
 loadSavedChats();
-let voiceRecognition;
 
-function sendMessage() {
-  const input = document.getElementById('chatInput');
-  const messages = document.getElementById('chatMessages');
-  const question = input.value.trim();
-
-  if (!question) {
-    alert('Please write a question first.');
-    return;
+function renderAttachmentSelection(){
+  const area=document.getElementById('chatAttachmentPreview');
+  area.replaceChildren();
+  if(selectedChatFiles.length===0){area.textContent='No files selected.';return;}
+  selectedChatFiles.forEach((file,index)=>{
+    const chip=document.createElement('span');
+    chip.className='file-chip';
+    chip.textContent=file.name+' ';
+    const remove=document.createElement('button');
+    remove.type='button';remove.textContent='×';remove.className='secondary';
+    remove.style.margin='0 0 0 6px';remove.onclick=()=>{selectedChatFiles.splice(index,1);renderAttachmentSelection();};
+    chip.appendChild(remove);area.appendChild(chip);
+  });
+}
+document.getElementById('chatAttachments').addEventListener('change',function(){
+  selectedChatFiles=Array.from(this.files||[]);
+  renderAttachmentSelection();
+});
+function clearChatAttachments(){
+  selectedChatFiles=[];
+  document.getElementById('chatAttachments').value='';
+  renderAttachmentSelection();
+}
+function addChatMessage(role,text,files){
+  const messages=document.getElementById('chatMessages');
+  const wrapper=document.createElement('div');wrapper.className='message';
+  const paragraph=document.createElement('p');
+  paragraph.textContent=(role==='user'?'You: ':'WONDER AI: ')+text;
+  wrapper.appendChild(paragraph);
+  (files||[]).forEach(file=>{
+    const chip=document.createElement('span');chip.className='file-chip';chip.textContent='📎 '+file.name;
+    wrapper.appendChild(chip);
+    if(file.type&&file.type.startsWith('image/')){
+      const image=document.createElement('img');image.alt='Attached image: '+file.name;
+      const url=URL.createObjectURL(file);image.src=url;
+      image.onload=()=>URL.revokeObjectURL(url);
+      wrapper.appendChild(image);
+    }
+  });
+  messages.appendChild(wrapper);
+}
+function sendMessage(){
+  const input=document.getElementById('chatInput');
+  const question=input.value.trim();
+  const files=selectedChatFiles.slice();
+  if(!question&&files.length===0){alert('Please write a message or attach a file first.');return;}
+  const names=files.map(file=>file.name);
+  addChatMessage('user',question||'I attached file(s).',files);
+  const replyText='Your message and attachment details have been received. The AI connection is not yet configured, so I cannot answer questions or analyse attached files yet.';
+  addChatMessage('assistant',replyText,[]);
+  saveCurrentChat(question,replyText,names);
+  input.value='';
+  clearChatAttachments();
+}
+function showNewChat(){
+  currentChatId=null;
+  openPanel('chat');
+  document.getElementById('chatMessages').innerHTML='<p>WONDER AI: Welcome to a new conversation! How can I help you?</p>';
+  document.getElementById('chatInput').value='';
+  clearChatAttachments();
+}
+function showChatHistory(){
+  const area=document.getElementById('navigationContent');area.style.display='block';
+  area.innerHTML='<h3>Chat History</h3>';
+  if(chatHistory.length===0){area.innerHTML+='<p>No saved conversations yet. Start a new chat!</p>';return;}
+  chatHistory.slice().reverse().forEach(chat=>{
+    const row=document.createElement('div');
+    const button=document.createElement('button');button.className='secondary';button.style.width='100%';
+    button.textContent=chat.title||'Untitled conversation';button.onclick=()=>openSavedChat(chat.id);
+    row.appendChild(button);area.appendChild(row);
+  });
+}
+function openSavedChat(id){
+  const chat=chatHistory.find(item=>item.id===id);if(!chat)return;
+  currentChatId=id;openPanel('chat');
+  const messages=document.getElementById('chatMessages');messages.replaceChildren();
+  (chat.messages||[]).forEach(message=>{
+    const wrapper=document.createElement('div');wrapper.className='message';
+    const p=document.createElement('p');p.textContent=(message.role==='user'?'You: ':'WONDER AI: ')+message.text;wrapper.appendChild(p);
+    (message.attachments||[]).forEach(name=>{const chip=document.createElement('span');chip.className='file-chip';chip.textContent='📎 '+name;wrapper.appendChild(chip);});
+    messages.appendChild(wrapper);
+  });
+  document.getElementById('chatInput').value='';clearChatAttachments();
+}
+function downloadCurrentChat(){
+  let chat=chatHistory.find(item=>item.id===currentChatId);
+  if(!chat){
+    const text=document.getElementById('chatMessages').innerText;
+    if(!text.trim()){alert('There is no conversation to download yet.');return;}
+    downloadTextFile('wonder-ai-chat.txt',text);return;
   }
-
-  const userMessage = document.createElement('p');
-  userMessage.textContent = 'You: ' + question;
-  messages.appendChild(userMessage);
-
-  const reply = document.createElement('div');
-  reply.style.margin = '12px 0';
-
-  const replyText = document.createElement('p');
-  replyText.textContent = 'WONDER AI: Your message has been received. The AI connection is not yet configured, so I cannot generate an answer yet.';
-saveCurrentChat(
-  question,
-  replyText.textContent.replace('WONDER AI: ', '')
-);
-  const speakerButton = document.createElement('button');
-  speakerButton.textContent = '🔊 Listen';
-  speakerButton.style.padding = '8px 12px';
-  speakerButton.style.background = '#d4af37';
-  speakerButton.style.border = '0';
-  speakerButton.style.borderRadius = '8px';
-
-  speakerButton.onclick = function() {
-    speakReply(replyText.textContent.replace('WONDER AI: ', ''));
-  };
-
-  reply.appendChild(replyText);
-  reply.appendChild(speakerButton);
-  messages.appendChild(reply);
-
-  input.value = '';
+  const lines=[chat.title||'WONDER AI Chat',''];
+  (chat.messages||[]).forEach(message=>{
+    lines.push((message.role==='user'?'You: ':'WONDER AI: ')+message.text);
+    (message.attachments||[]).forEach(name=>lines.push('Attachment: '+name));
+    lines.push('');
+  });
+  downloadTextFile('wonder-ai-chat.txt',lines.join('\n'));
 }
 
-function speakReply(text) {
-  if (!('speechSynthesis' in window)) {
-    alert('Voice reading is not supported by this browser.');
-    return;
-  }
-
+function speakReply(text){
+  if(!text.trim()){alert('There is no text to read aloud.');return;}
+  if(!('speechSynthesis'in window)){alert('Voice reading is not supported by this browser.');return;}
   window.speechSynthesis.cancel();
-
-  const speech = new SpeechSynthesisUtterance(text);
-  speech.lang = navigator.language || 'en-US';
-
+  const speech=new SpeechSynthesisUtterance(text);speech.lang=navigator.language||'en-US';
   window.speechSynthesis.speak(speech);
 }
-
-function stopSpeaking() {
-  if ('speechSynthesis' in window) {
-    window.speechSynthesis.cancel();
-  }
+function stopSpeaking(){if('speechSynthesis'in window)window.speechSynthesis.cancel();}
+function startVoiceInput(){
+  const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!Recognition){alert('Voice typing is not supported by this browser.');return;}
+  voiceRecognition=new Recognition();voiceRecognition.lang='en-US';voiceRecognition.continuous=false;voiceRecognition.interimResults=true;
+  const input=document.getElementById('chatInput');const status=document.getElementById('voiceStatus');
+  voiceRecognition.onstart=()=>status.textContent='Listening... Speak now.';
+  voiceRecognition.onresult=event=>{let transcript='';for(let i=0;i<event.results.length;i++)transcript+=event.results[i][0].transcript;input.value=transcript;};
+  voiceRecognition.onerror=()=>status.textContent='Voice recognition encountered a problem. Please try again.';
+  voiceRecognition.onend=()=>status.textContent='Voice input stopped.';
+  try{voiceRecognition.start();}catch(error){status.textContent='Voice input could not start. Please try again.';}
 }
+function stopVoiceInput(){if(voiceRecognition){try{voiceRecognition.stop();}catch(error){}}}
 
-function startVoiceInput() {
-  const SpeechRecognition =
-    window.SpeechRecognition || window.webkitSpeechRecognition;
-
-  if (!SpeechRecognition) {
-    alert('Voice typing is not supported by this browser.');
-    return;
-  }
-
-  voiceRecognition = new SpeechRecognition();
-  voiceRecognition.lang = 'en-US';
-  voiceRecognition.continuous = false;
-  voiceRecognition.interimResults = true;
-
-  const input = document.getElementById('chatInput');
-  const status = document.getElementById('voiceStatus');
-
-  voiceRecognition.onstart = function() {
-    status.textContent = 'Listening... Speak now.';
-  };
-
-  voiceRecognition.onresult = function(event) {
-    let transcript = '';
-
-    for (let i = 0; i < event.results.length; i++) {
-      transcript += event.results[i][0].transcript;
-    }
-
-    input.value = transcript;
-  };
-
-  voiceRecognition.onerror = function() {
-    status.textContent = 'Voice recognition encountered a problem. Please try again.';
-  };
-
-  voiceRecognition.onend = function() {
-    status.textContent = 'Voice input stopped.';
-  };
-
-  voiceRecognition.start();
+function downloadTextFile(filename,text){
+  if(!text||!text.trim()){alert('There is no content to download yet.');return;}
+  const blob=new Blob([text],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);const link=document.createElement('a');
+  link.href=url;link.download=filename;document.body.appendChild(link);link.click();link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
-
-function stopVoiceInput() {
-  if (voiceRecognition) {
-    voiceRecognition.stop();
-  }
-  }
-  
-</script>
-<script>
-function previewVideoImage(event) {
-  const file = event.target.files[0];
-  const preview = document.getElementById('videoImagePreview');
-
-  if (!file) return;
-
-  preview.src = URL.createObjectURL(file);
-  preview.style.display = 'block';
+function loadMyProjects(){
+  try{const projects=JSON.parse(localStorage.getItem('wonderAIProjects'))||[];return Array.isArray(projects)?projects:[];}
+  catch(error){return [];}
 }
- function saveVideoProject() {
-  const title = document.getElementById('videoTitle').value.trim();
-  const prompt = document.getElementById('videoPrompt').value.trim();
-  const category = document.getElementById('videoCategory').value;
-  const duration = document.getElementById('videoDuration').value;
-
-  if (!title || !prompt) {
-    alert('Please enter a project title and video description.');
-    return;
-  }
-
-  const projects = loadMyProjects();
-
-  projects.push({
-    id: Date.now().toString(),
-    title: title,
-    category: 'Video Project',
-    description:
-      'Video Category: ' + category +
-      '\nDuration: ' + duration + ' seconds' +
-      '\n\nVideo Description:\n' + prompt,
-    date: new Date().toLocaleString()
-  });
-
-  saveMyProjects(projects);
-
-  alert('Your video project has been saved to My Projects successfully!');
-
-  document.getElementById('videoTitle').value = '';
-  document.getElementById('videoPrompt').value = '';
-  } 
-
-function showNewChat() {
-  currentChatId = null;
-  
-  openPanel('chat');
-
-  document.getElementById('chatMessages').innerHTML =
-    '<p>WONDER AI: Welcome to a new conversation! How can I help you?</p>';
-
-  document.getElementById('chatInput').value = '';
-
-  document.getElementById('navigationContent').style.display = 'none';
-
-  document.getElementById('chat').scrollIntoView({behavior:'smooth'});
-  }
-
-function showChatHistory() {
-  const area = document.getElementById('navigationContent');
-  area.style.display = 'block';
-  area.innerHTML = '<h3>Chat History</h3>';
-
-  if (chatHistory.length === 0) {
-    area.innerHTML += '<p>No saved conversations yet. Start a new chat!</p>';
-    return;
-  }
-
-  chatHistory.slice().reverse().forEach(chat => {
-    const button = document.createElement('button');
-
-    button.textContent = chat.title || 'Untitled conversation';
-    button.style.cssText =
-      'display:block;width:100%;padding:12px;margin:8px 0;text-align:left;border-radius:8px;';
-
-    button.onclick = function() {
-      openSavedChat(chat.id);
-    };
-
-    area.appendChild(button);
-  });
+function saveMyProjects(projects){
+  try{localStorage.setItem('wonderAIProjects',JSON.stringify(projects));}
+  catch(error){alert('Browser storage is full. Download or remove some projects before saving more.');}
 }
-
-function openSavedChat(id) {
-  const chat = chatHistory.find(item => item.id === id);
-
-  if (!chat) return;
-
-  currentChatId = id;
-
-  openPanel('chat');
-
-  const messages = document.getElementById('chatMessages');
-  messages.innerHTML = '';
-
-  chat.messages.forEach(message => {
-    const paragraph = document.createElement('p');
-    paragraph.textContent =
-      (message.role === 'user' ? 'You: ' : 'WONDER AI: ') + message.text;
-
-    messages.appendChild(paragraph);
-  });
-
-  document.getElementById('chatInput').value = '';
-  document.getElementById('navigationContent').style.display = 'none';
-    }
-
-function loadMyProjects() {
-  try {
-    return JSON.parse(localStorage.getItem('wonderAIProjects')) || [];
-  } catch (error) {
-    return [];
-  }
+function downloadProject(project){
+  downloadTextFile('wonder-ai-project.txt',
+    'Title: '+project.title+'\nCategory: '+project.category+'\nSaved: '+project.date+'\n\n'+project.description);
 }
-
-function saveMyProjects(projects) {
-  localStorage.setItem('wonderAIProjects', JSON.stringify(projects));
-}
-
-function showMyProjects() {
-  const area = document.getElementById('navigationContent');
-  area.style.display = 'block';
-
-  const projects = loadMyProjects();
-
-  area.innerHTML = `
-    <h3>📁 My Projects</h3>
-
+function showMyProjects(){
+  const area=document.getElementById('navigationContent');area.style.display='block';
+  const projects=loadMyProjects();
+  area.innerHTML=`<h3>📁 My Projects</h3>
     <h4>Create a New Project</h4>
-
     <input id="projectTitle" placeholder="Enter project title">
-
-    <select id="projectCategory" style="width:100%;padding:12px;margin-top:10px;">
-      <option>Video Project</option>
-      <option>Image Project</option>
-      <option>Bible Story</option>
-      <option>YouTube Content</option>
-      <option>Other</option>
-    </select>
-
-    <textarea id="projectDescription"
-      placeholder="Describe or write your project here..."
-      rows="5"></textarea>
-
-    <button id="saveProjectButton" class="action">
-      Save Project
-    </button>
-
-    <hr>
-
-    <h4>Your Saved Projects</h4>
-
-    <div id="savedProjectsList"></div>
-  `;
-
-  document.getElementById('saveProjectButton').onclick = function() {
-    const title = document.getElementById('projectTitle').value.trim();
-    const category = document.getElementById('projectCategory').value;
-    const description = document.getElementById('projectDescription').value.trim();
-
-    if (!title || !description) {
-      alert('Please enter a project title and description.');
-      return;
-    }
-
-    const projects = loadMyProjects();
-
-    projects.push({
-      id: Date.now().toString(),
-      title: title,
-      category: category,
-      description: description,
-      date: new Date().toLocaleString()
-    });
-
-    saveMyProjects(projects);
-
-    alert('Your project has been saved successfully!');
-
-    showMyProjects();
+    <select id="projectCategory"><option>Video Project</option><option>Image Project</option><option>Bible Story</option><option>YouTube Content</option><option>Other</option></select>
+    <textarea id="projectDescription" placeholder="Describe or write your project here..." rows="5"></textarea>
+    <button id="saveProjectButton" class="action">Save Project</button>
+    <hr><h4>Your Saved Projects</h4><div id="savedProjectsList"></div>`;
+  document.getElementById('saveProjectButton').onclick=()=>{
+    const title=document.getElementById('projectTitle').value.trim();
+    const category=document.getElementById('projectCategory').value;
+    const description=document.getElementById('projectDescription').value.trim();
+    if(!title||!description){alert('Please enter a project title and description.');return;}
+    const list=loadMyProjects();list.push({id:Date.now().toString(),title,category,description,date:new Date().toLocaleString()});
+    saveMyProjects(list);alert('Your project has been saved successfully!');showMyProjects();
   };
-
-  const list = document.getElementById('savedProjectsList');
-
-  if (projects.length === 0) {
-    list.textContent = 'No saved projects yet. Create your first project above!';
-    return;
-  }
-
-  projects.slice().reverse().forEach(project => {
-    const button = document.createElement('button');
-
-    button.textContent = project.title + ' — ' + project.category;
-    button.style.cssText =
-      'display:block;width:100%;padding:12px;margin:8px 0;text-align:left;border-radius:8px;';
-
-    button.onclick = function() {
-      const details = document.createElement('div');
-      const heading = document.createElement('h4');
-      const category = document.createElement('p');
-      const description = document.createElement('p');
-      const date = document.createElement('small');
-      const edit = document.createElement('button');
-      const back = document.createElement('button');
-      const deleteButton = document.createElement('button');
-      heading.textContent = project.title;
-      category.textContent = project.category;
-      description.textContent = project.description;
-      date.textContent = 'Saved: ' + project.date;
-
-      edit.textContent = '✏️ Edit Project';
-      back.textContent = '← Back to My Projects';
-      deleteButton.textContent = '🗑️ Delete Project';
-
-      edit.onclick = function() {
-        area.innerHTML = `
-          <h3>✏️ Edit Project</h3>
-
-          <input id="editProjectTitle" placeholder="Project title">
-
-          <select id="editProjectCategory" style="width:100%;padding:12px;margin-top:10px;">
-            <option>Video Project</option>
-            <option>Image Project</option>
-            <option>Bible Story</option>
-            <option>YouTube Content</option>
-            <option>Other</option>
-          </select>
-
-          <textarea id="editProjectDescription"
-            placeholder="Project description"
-            rows="5"></textarea>
-
-          <button id="updateProjectButton" class="action">
-            Save Changes
-          </button>
-
-          <button id="cancelEditButton">
-            Cancel
-          </button>
-        `;
-
-        document.getElementById('editProjectTitle').value = project.title;
-        document.getElementById('editProjectCategory').value = project.category;
-        document.getElementById('editProjectDescription').value = project.description;
-
-        document.getElementById('updateProjectButton').onclick = function() {
-          const title = document.getElementById('editProjectTitle').value.trim();
-          const category = document.getElementById('editProjectCategory').value;
-          const description = document.getElementById('editProjectDescription').value.trim();
-
-          if (!title || !description) {
-            alert('Please enter a project title and description.');
-            return;
-          }
-
-          const updatedProjects = loadMyProjects();
-          const savedProject = updatedProjects.find(item => item.id === project.id);
-
-          if (!savedProject) {
-            alert('Project not found.');
-            return;
-          }
-
-          savedProject.title = title;
-          savedProject.category = category;
-          savedProject.description = description;
-
-          saveMyProjects(updatedProjects);
-
-          alert('Your project has been updated successfully!');
-
-          showMyProjects();
-        };
-
-        document.getElementById('cancelEditButton').onclick = showMyProjects;
-      };
-
-      back.onclick = showMyProjects;
-      deleteButton.onclick = function() {
-  const confirmDelete = confirm('Are you sure you want to delete this project?');
-
-  if (!confirmDelete) return;
-
-  const projects = loadMyProjects();
-  const updatedProjects = projects.filter(item => item.id !== project.id);
-
-  saveMyProjects(updatedProjects);
-
-  alert('Project deleted successfully!');
-
-  showMyProjects();
-};
-
-      details.append(heading, category, description, date, edit, deleteButton, back);
-      area.replaceChildren(details);
-    };
-
-    list.appendChild(button);
+  const list=document.getElementById('savedProjectsList');
+  if(projects.length===0){list.textContent='No saved projects yet. Create your first project above!';return;}
+  projects.slice().reverse().forEach(project=>{
+    const button=document.createElement('button');button.className='secondary';button.style.width='100%';
+    button.textContent=project.title+' — '+project.category;
+    button.onclick=()=>showProjectDetails(project,'my');list.appendChild(button);
   });
+}
+function showProjectDetails(project,source){
+  const area=document.getElementById('navigationContent');area.style.display='block';area.replaceChildren();
+  const heading=document.createElement('h3');heading.textContent=project.title;
+  const category=document.createElement('p');category.textContent='Category: '+project.category;
+  const description=document.createElement('p');description.textContent=project.description;
+  const date=document.createElement('p');date.textContent='Saved: '+(project.date||'');
+  const download=document.createElement('button');download.className='action';download.textContent='⬇ Download Project';download.onclick=()=>downloadProject(project);
+  const back=document.createElement('button');back.className='secondary';back.textContent='← Back';back.onclick=source==='my'?showMyProjects:showSavedProjects;
+  const remove=document.createElement('button');remove.className='secondary';remove.textContent='🗑️ Delete Project';
+  remove.onclick=()=>{
+    if(!confirm('Are you sure you want to delete this project?'))return;
+    saveMyProjects(loadMyProjects().filter(item=>item.id!==project.id));
+    alert('Project deleted successfully!');source==='my'?showMyProjects():showSavedProjects();
+  };
+  area.append(heading,category,description,date,download,remove,back);
+  if(source==='my'){
+    const edit=document.createElement('button');edit.className='secondary';edit.textContent='✏️ Edit Project';
+    edit.onclick=()=>showEditProject(project);area.appendChild(edit);
   }
-  
-function showSavedProjects() {
-  const area = document.getElementById('navigationContent');
-  area.style.display = 'block';
-
-  const projects = loadMyProjects();
-
-  area.innerHTML = '<h3>⭐ Saved Projects</h3>';
-
-  if (projects.length === 0) {
-    area.innerHTML += '<p>No saved projects yet. Save a project in My Projects first!</p>';
-    return;
-  }
-
-  projects.slice().reverse().forEach(project => {
-    const button = document.createElement('button');
-
-    button.textContent = '⭐ ' + project.title + ' — ' + project.category;
-
-    button.style.cssText =
-      'display:block;width:100%;padding:12px;margin:8px 0;text-align:left;border-radius:8px;';
-
-    button.onclick = function() {
-      const details = document.createElement('div');
-      const heading = document.createElement('h4');
-      const category = document.createElement('p');
-      const description = document.createElement('p');
-      const date = document.createElement('small');
-      const back = document.createElement('button');
-      const deleteButton = document.createElement('button');
-
-      heading.textContent = project.title;
-      category.textContent = project.category;
-      description.textContent = project.description;
-      date.textContent = 'Saved: ' + project.date;
-      back.textContent = '← Back to Saved Projects';
-      deleteButton.textContent = '🗑️ Delete Project';
-
-      back.onclick = showSavedProjects;
-      deleteButton.onclick = function() {
-  const confirmDelete = confirm('Are you sure you want to delete this project?');
-
-  if (!confirmDelete) return;
-
-  const projects = loadMyProjects();
-  const updatedProjects = projects.filter(item => item.id !== project.id);
-
-  saveMyProjects(updatedProjects);
-
-  alert('Project deleted successfully!');
-
-  showSavedProjects();
-};
-
-      details.append(heading, category, description, date, deleteButton, back);
-      area.replaceChildren(details);
-    };
-
-    area.appendChild(button);
+}
+function showEditProject(project){
+  const area=document.getElementById('navigationContent');area.innerHTML=`
+    <h3>✏️ Edit Project</h3>
+    <input id="editProjectTitle" placeholder="Project title">
+    <select id="editProjectCategory"><option>Video Project</option><option>Image Project</option><option>Bible Story</option><option>YouTube Content</option><option>Other</option></select>
+    <textarea id="editProjectDescription" rows="5" placeholder="Project description"></textarea>
+    <button id="updateProjectButton" class="action">Save Changes</button>
+    <button id="cancelEditButton" class="secondary">Cancel</button>`;
+  document.getElementById('editProjectTitle').value=project.title;
+  document.getElementById('editProjectCategory').value=project.category;
+  document.getElementById('editProjectDescription').value=project.description;
+  document.getElementById('updateProjectButton').onclick=()=>{
+    const title=document.getElementById('editProjectTitle').value.trim();
+    const category=document.getElementById('editProjectCategory').value;
+    const description=document.getElementById('editProjectDescription').value.trim();
+    if(!title||!description){alert('Please enter a project title and description.');return;}
+    const projects=loadMyProjects();const saved=projects.find(item=>item.id===project.id);
+    if(!saved){alert('Project not found.');return;}
+    saved.title=title;saved.category=category;saved.description=description;saveMyProjects(projects);
+    alert('Your project has been updated successfully!');showMyProjects();
+  };
+  document.getElementById('cancelEditButton').onclick=showMyProjects;
+}
+function showSavedProjects(){
+  const area=document.getElementById('navigationContent');area.style.display='block';area.innerHTML='<h3>⭐ Saved Projects</h3>';
+  const projects=loadMyProjects();
+  if(projects.length===0){area.innerHTML+='<p>No saved projects yet. Save a project in My Projects first!</p>';return;}
+  projects.slice().reverse().forEach(project=>{
+    const button=document.createElement('button');button.className='secondary';button.style.width='100%';
+    button.textContent='⭐ '+project.title+' — '+project.category;
+    button.onclick=()=>showProjectDetails(project,'saved');area.appendChild(button);
   });
-  }
+}
+function showSettings(){
+  const area=document.getElementById('navigationContent');area.style.display='block';
+  area.innerHTML='<h3>WONDER AI Settings</h3><p>Studio settings and preferences will appear here.</p><p>AI services: Not connected yet.</p>';
+}
 
-function showSettings() {
-  const area = document.getElementById('navigationContent');
-  area.style.display = 'block';
-  area.innerHTML = '<h3>WONDER AI Settings</h3><p>Studio settings and preferences will appear here.</p>';
-  }
-</script>  
+function previewImageReference(event){
+  const file=event.target.files&&event.target.files[0];const preview=document.getElementById('imageReferencePreview');
+  if(!file){preview.style.display='none';preview.removeAttribute('src');return;}
+  if(!file.type.startsWith('image/')){alert('Please choose an image file.');event.target.value='';return;}
+  if(preview.dataset.objectUrl)URL.revokeObjectURL(preview.dataset.objectUrl);
+  const url=URL.createObjectURL(file);preview.dataset.objectUrl=url;preview.src=url;preview.style.display='block';
+}
+function clearImageStudio(){
+  document.getElementById('imageTitle').value='';document.getElementById('imagePrompt').value='';
+  document.getElementById('imageReference').value='';
+  const preview=document.getElementById('imageReferencePreview');
+  if(preview.dataset.objectUrl)URL.revokeObjectURL(preview.dataset.objectUrl);
+  preview.removeAttribute('src');preview.style.display='none';document.getElementById('imageStatus').textContent='';
+}
+function prepareImageProject(){
+  const title=document.getElementById('imageTitle').value.trim();const prompt=document.getElementById('imagePrompt').value.trim();
+  if(!title||!prompt){alert('Please enter a project title and image description.');return;}
+  document.getElementById('imageStatus').textContent='Your image project is prepared. AI image generation is not connected yet.';
+}
+function saveImageProject(){
+  const title=document.getElementById('imageTitle').value.trim();const prompt=document.getElementById('imagePrompt').value.trim();
+  if(!title||!prompt){alert('Please enter a project title and image description.');return;}
+  const projects=loadMyProjects();
+  projects.push({id:Date.now().toString(),title,category:'Image Project',description:'Image Description:\n'+prompt,date:new Date().toLocaleString()});
+  saveMyProjects(projects);
+  alert('Your image project has been saved to My Projects successfully!');
+}
+function downloadImagePrompt(){
+  const title=document.getElementById('imageTitle').value.trim();const prompt=document.getElementById('imagePrompt').value.trim();
+  if(!prompt){alert('Please enter an image description first.');return;}
+  downloadTextFile('wonder-ai-image-prompt.txt','Title: '+title+'\n\nImage prompt:\n'+prompt);
+}
+function previewVideoImage(event){
+  const file=event.target.files&&event.target.files[0];const preview=document.getElementById('videoImagePreview');
+  if(!file){preview.style.display='none';return;}
+  if(!file.type.startsWith('image/')){alert('Please choose an image file.');event.target.value='';return;}
+  if(preview.dataset.objectUrl)URL.revokeObjectURL(preview.dataset.objectUrl);
+  const url=URL.createObjectURL(file);preview.dataset.objectUrl=url;preview.src=url;preview.style.display='block';
+}
+function prepareVideoProject(){
+  const title=document.getElementById('videoTitle').value.trim();const prompt=document.getElementById('videoPrompt').value.trim();
+  if(!title||!prompt){alert('Please enter a project title and video description.');return;}
+  document.getElementById('videoStatus').textContent='Your video project is prepared. AI video generation is not connected yet.';
+}
+function videoDescription(){
+  return 'Video Category: '+document.getElementById('videoCategory').value+
+    '\nDuration: '+document.getElementById('videoDuration').value+' seconds\n\nVideo Description:\n'+document.getElementById('videoPrompt').value.trim();
+}
+function saveVideoProject(){
+  const title=document.getElementById('videoTitle').value.trim();const prompt=document.getElementById('videoPrompt').value.trim();
+  if(!title||!prompt){alert('Please enter a project title and video description.');return;}
+  const projects=loadMyProjects();projects.push({id:Date.now().toString(),title,category:'Video Project',description:videoDescription(),date:new Date().toLocaleString()});
+  saveMyProjects(projects);alert('Your video project has been saved to My Projects successfully!');
+  document.getElementById('videoTitle').value='';document.getElementById('videoPrompt').value='';
+}
+function downloadVideoPrompt(){
+  const prompt=document.getElementById('videoPrompt').value.trim();if(!prompt){alert('Please enter a video description first.');return;}
+  downloadTextFile('wonder-ai-video-prompt.txt','Title: '+document.getElementById('videoTitle').value+'\n\n'+videoDescription());
+}
+</script>
 </body>
-  </html>
-  
+</html>
