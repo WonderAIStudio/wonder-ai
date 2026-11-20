@@ -140,9 +140,12 @@ footer{text-align:center;padding:30px;color:#9da8bd;font-size:12px}
 
   <h3>Video Project Creator</h3>
 
+  <p>Enter your video project title:</p>
+  <input type="text" id="videoTitle" placeholder="Enter video project title" style="width:100%; padding:12px; box-sizing:border-box;">
+
   <p>Describe the complete video you want to create, including movements and camera actions:</p>
 
-  <textarea id="videoPrompt" placeholder="Describe everything here. Example: Turn my uploaded picture into a 15-second cinematic video. Make the person smile, turn gently towards the camera and wave. Add a beautiful background and smooth camera movement..." rows="6" style="width:100%; box-sizing:border-box;"></textarea>
+  <textarea id="videoPrompt" placeholder="Describe everything here. Example: Turn my uploaded picture into a 15-second cinematic video. Add a beautiful background and smooth camera movement..." rows="6" style="width:100%; box-sizing:border-box;"></textarea>
 
   <p>Choose your video category:</p>
 
@@ -174,9 +177,12 @@ footer{text-align:center;padding:30px;color:#9da8bd;font-size:12px}
     Prepare Video Project
   </button>
 
+  <button onclick="saveVideoProject()" style="margin-top:12px; padding:12px; width:100%; background:#d4af37; color:#101a30; border:0; border-radius:8px; font-weight:bold;">
+    Save to My Projects
+  </button>
+
 </div>
-    </section>
-  
+</section>
   
 <section id="voice" class="panel">
 <h2>Voice Studio</h2>
@@ -385,7 +391,37 @@ function previewVideoImage(event) {
   preview.src = URL.createObjectURL(file);
   preview.style.display = 'block';
 }
-  
+ function saveVideoProject() {
+  const title = document.getElementById('videoTitle').value.trim();
+  const prompt = document.getElementById('videoPrompt').value.trim();
+  const category = document.getElementById('videoCategory').value;
+  const duration = document.getElementById('videoDuration').value;
+
+  if (!title || !prompt) {
+    alert('Please enter a project title and video description.');
+    return;
+  }
+
+  const projects = loadMyProjects();
+
+  projects.push({
+    id: Date.now().toString(),
+    title: title,
+    category: 'Video Project',
+    description:
+      'Video Category: ' + category +
+      '\nDuration: ' + duration + ' seconds' +
+      '\n\nVideo Description:\n' + prompt,
+    date: new Date().toLocaleString()
+  });
+
+  saveMyProjects(projects);
+
+  alert('Your video project has been saved to My Projects successfully!');
+
+  document.getElementById('videoTitle').value = '';
+  document.getElementById('videoPrompt').value = '';
+  } 
 
 function showNewChat() {
   currentChatId = null;
