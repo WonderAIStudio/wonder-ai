@@ -281,19 +281,68 @@ function addChatMessage(role,text,files){
   });
   messages.appendChild(wrapper);
 }
-function sendMessage(){
-  const input=document.getElementById('chatInput');
-  const question=input.value.trim();
-  const files=selectedChatFiles.slice();
-  if(!question&&files.length===0){alert('Please write a message or attach a file first.');return;}
-  const names=files.map(file=>file.name);
-  addChatMessage('user',question||'I attached file(s).',files);
-  const replyText='Your message and attachment details have been received. The AI connection is not yet configured, so I cannot answer questions or analyse attached files yet.';
-  addChatMessage('assistant',replyText,[]);
-  saveCurrentChat(question,replyText,names);
-  input.value='';
+
+async function sendMessage(){
+  const input = document.getElementById('chatInput');
+  const question = input.value.trim();
+  const files = selectedChatFiles.slice();
+
+  if(!question && files.length === 0){
+    alert('Please write a message first.');
+    return;
+  }
+
+  if(files.length > 0){
+    alert('File analysis is not available yet. Please send a text message for now.');
+    return;
+  }
+
+  const sendButton = document.querySelector('#chatInput')
+    ?.closest('form')
+    ?.querySelector('button[type="submit"]');
+
+  const message = question;
+  addChatMessage('user', message, []);
+  input.value = '';
+
+  try {
+    const response = await fetch('/.netlify/functions/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        messages: [
+          {
+            role: 'user',
+            content: message
+          }
+        ]
+      })
+    });
+
+    const data = await response.json();
+
+    if(!response.ok){
+      throw new Error(data.error || 'The AI service could not respond.');
+    }
+
+    const replyText = data.reply || 'I could not generate a response.';
+    addChatMessage('assistant', replyText, []);
+    saveCurrentChat(message, replyText, []);
+
+  } catch(error) {
+    addChatMessage(
+      'assistant',
+      'Sorry, WONDER AI could not connect right now. Please try again later.',
+      []
+    );
+    console.error('WONDER AI error:', error);
+  }
+
   clearChatAttachments();
-}
+  }
+       
 function showNewChat(){
   currentChatId=null;
   openPanel('chat');
