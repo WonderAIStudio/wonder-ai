@@ -282,7 +282,6 @@ function addChatMessage(role,text,files){
   messages.appendChild(wrapper);
 }
 
-
 async function sendMessage(){
   const input = document.getElementById('chatInput');
   const question = input.value.trim();
@@ -300,7 +299,6 @@ async function sendMessage(){
 
   const message = question;
 
-  // Retrieve previous messages from this conversation
   const currentChat = chatHistory.find(
     item => item.id === currentChatId
   );
@@ -316,18 +314,18 @@ async function sendMessage(){
         }))
     : [];
 
-  // Include the latest message
   const conversationMessages = [
     ...previousMessages,
     {
       role: 'user',
       content: message
     }
-  ].slice(-10);
+  ].slice(-20);
 
   addChatMessage('user', message, []);
   input.value = '';
-    const typing = document.createElement('div');
+
+  const typing = document.createElement('div');
   typing.className = 'message';
   typing.textContent = 'WONDER AI is thinking...';
   typing.id = 'wonderAITyping';
@@ -340,11 +338,14 @@ async function sendMessage(){
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
+        action: 'chat',
+        summary: currentChat?.summary || '',
         messages: conversationMessages
       })
     });
 
     const data = await response.json();
+
     document.getElementById('wonderAITyping')?.remove();
 
     if(!response.ok){
@@ -360,8 +361,88 @@ async function sendMessage(){
 
     saveCurrentChat(message, replyText, []);
 
+    // Automatically update conversation memory
+    const savedChat = chatHistory.find(
+      item => item.id === currentChatId
+    );
+
+    if(savedChat){
+      const summarizedCount =
+        Number(savedChat.summarizedCount) || 0;
+
+      const totalMessages = savedChat.messages.length;
+
+      if(
+        totalMessages >= 20 &&
+        totalMessages - summarizedCount >= 20
+      ){
+        const cutoff = Math.max(
+          summarizedCount,
+          totalMessages - 10
+        );
+
+        const messagesToSummarize =
+          savedChat.messages
+            .slice(summarizedCount, cutoff)
+            .filter(item =>
+              item.role === 'user' ||
+              item.role === 'assistant'
+            )
+            .map(item => ({
+              role: item.role,
+              content: item.text || ''
+            }));
+
+        if(messagesToSummarize.length){
+          try {
+            const summaryResponse = await fetch(
+              '/.netlify/functions/chat',
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  action: 'summarize',
+                  previousSummary:
+                    savedChat.summary || '',
+                  messages: messagesToSummarize
+                })
+              }
+            );
+
+            const summaryData =
+              await summaryResponse.json();
+
+            if(
+              summaryResponse.ok &&
+              summaryData.summary
+            ){
+              savedChat.summary = summaryData.summary;
+              savedChat.summarizedCount = cutoff;
+              savedChat.summaryUpdatedAt =
+                new Date().toISOString();
+
+              saveChatHistory();
+            } else {
+              console.warn(
+                'WONDER AI memory update was unsuccessful.'
+              );
+            }
+
+          } catch(summaryError) {
+            console.error(
+              'Memory update error:',
+              summaryError
+            );
+          }
+        }
+      }
+    }
+
   } catch(error) {
     document.getElementById('wonderAITyping')?.remove();
+
     addChatMessage(
       'assistant',
       'Sorry, WONDER AI could not connect right now. Please try again later.',
@@ -373,8 +454,7 @@ async function sendMessage(){
 
   clearChatAttachments();
   }
-                                         
-       
+                                             
 function showNewChat(){
   currentChatId=null;
   openPanel('chat');
