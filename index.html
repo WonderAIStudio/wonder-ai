@@ -327,6 +327,11 @@ async function sendMessage(){
 
   addChatMessage('user', message, []);
   input.value = '';
+    const typing = document.createElement('div');
+  typing.className = 'message';
+  typing.textContent = 'WONDER AI is thinking...';
+  typing.id = 'wonderAITyping';
+  document.getElementById('chatMessages').appendChild(typing);
 
   try {
     const response = await fetch('/.netlify/functions/chat', {
@@ -340,6 +345,7 @@ async function sendMessage(){
     });
 
     const data = await response.json();
+    document.getElementById('wonderAITyping')?.remove();
 
     if(!response.ok){
       throw new Error(
@@ -355,6 +361,7 @@ async function sendMessage(){
     saveCurrentChat(message, replyText, []);
 
   } catch(error) {
+    document.getElementById('wonderAITyping')?.remove();
     addChatMessage(
       'assistant',
       'Sorry, WONDER AI could not connect right now. Please try again later.',
