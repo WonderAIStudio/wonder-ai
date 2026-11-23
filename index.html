@@ -311,6 +311,7 @@ function addChatMessage(role,text,files){
 
   let paragraphLines=[];
   let currentList=null;
+let orderedNumber=0;
 
   function flushParagraph(){
     if(!paragraphLines.length)return;
@@ -332,9 +333,8 @@ function addChatMessage(role,text,files){
     const numbered=line.match(/^\s*\d+[.)]\s+(.+)$/);
 
     if(!line.trim()){
-      flushParagraph();
-      closeList();
-      return;
+  flushParagraph();
+  return;
     }
 
     if(heading){
@@ -358,7 +358,12 @@ function addChatMessage(role,text,files){
       if(!currentList||currentList.tagName.toLowerCase()!==type){
         closeList();
         currentList=document.createElement(type);
-        currentList.style.paddingLeft='24px';
+
+if(type==='ol'){
+  currentList.start=orderedNumber+1;
+}
+
+currentList.style.paddingLeft='24px';
         currentList.style.margin='8px 0 14px';
         content.appendChild(currentList);
       }
@@ -367,6 +372,10 @@ function addChatMessage(role,text,files){
       li.style.margin='5px 0';
       addInlineText(li,(bullet||numbered)[1]);
       currentList.appendChild(li);
+
+if(type==='ol'){
+  orderedNumber++;
+    }
       return;
     }
 
