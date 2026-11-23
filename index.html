@@ -282,6 +282,7 @@ function addChatMessage(role,text,files){
   messages.appendChild(wrapper);
 }
 
+
 async function sendMessage(){
   const input = document.getElementById('chatInput');
   const question = input.value.trim();
@@ -297,11 +298,33 @@ async function sendMessage(){
     return;
   }
 
-  const sendButton = document.querySelector('#chatInput')
-    ?.closest('form')
-    ?.querySelector('button[type="submit"]');
-
   const message = question;
+
+  // Retrieve previous messages from this conversation
+  const currentChat = chatHistory.find(
+    item => item.id === currentChatId
+  );
+
+  const previousMessages = currentChat
+    ? (currentChat.messages || [])
+        .filter(item =>
+          item.role === 'user' || item.role === 'assistant'
+        )
+        .map(item => ({
+          role: item.role,
+          content: item.text || ''
+        }))
+    : [];
+
+  // Include the latest message
+  const conversationMessages = [
+    ...previousMessages,
+    {
+      role: 'user',
+      content: message
+    }
+  ].slice(-10);
+
   addChatMessage('user', message, []);
   input.value = '';
 
@@ -312,23 +335,23 @@ async function sendMessage(){
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        messages: [
-          {
-            role: 'user',
-            content: message
-          }
-        ]
+        messages: conversationMessages
       })
     });
 
     const data = await response.json();
 
     if(!response.ok){
-      throw new Error(data.error || 'The AI service could not respond.');
+      throw new Error(
+        data.error || 'The AI service could not respond.'
+      );
     }
 
-    const replyText = data.reply || 'I could not generate a response.';
+    const replyText = data.reply ||
+      'I could not generate a response.';
+
     addChatMessage('assistant', replyText, []);
+
     saveCurrentChat(message, replyText, []);
 
   } catch(error) {
@@ -337,11 +360,13 @@ async function sendMessage(){
       'Sorry, WONDER AI could not connect right now. Please try again later.',
       []
     );
+
     console.error('WONDER AI error:', error);
   }
 
   clearChatAttachments();
   }
+                                         
        
 function showNewChat(){
   currentChatId=null;
