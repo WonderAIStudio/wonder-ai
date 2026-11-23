@@ -263,24 +263,43 @@ function clearChatAttachments(){
   document.getElementById('chatAttachments').value='';
   renderAttachmentSelection();
 }
+
 function addChatMessage(role,text,files){
   const messages=document.getElementById('chatMessages');
-  const wrapper=document.createElement('div');wrapper.className='message';
+  const wrapper=document.createElement('div');
+  wrapper.className='message';
+
   const paragraph=document.createElement('p');
-  paragraph.textContent=(role==='user'?'You: ':'WONDER AI: ')+text;
+
+  paragraph.textContent=
+    (role==='user'?'You: ':'WONDER AI: ')+text;
+
+  // Preserve paragraphs and line breaks
+  paragraph.style.whiteSpace='pre-wrap';
+  paragraph.style.lineHeight='1.7';
+  paragraph.style.overflowWrap='anywhere';
+
   wrapper.appendChild(paragraph);
+
   (files||[]).forEach(file=>{
-    const chip=document.createElement('span');chip.className='file-chip';chip.textContent='📎 '+file.name;
+    const chip=document.createElement('span');
+    chip.className='file-chip';
+    chip.textContent='📎 '+file.name;
     wrapper.appendChild(chip);
+
     if(file.type&&file.type.startsWith('image/')){
-      const image=document.createElement('img');image.alt='Attached image: '+file.name;
-      const url=URL.createObjectURL(file);image.src=url;
+      const image=document.createElement('img');
+      image.alt='Attached image: '+file.name;
+      const url=URL.createObjectURL(file);
+      image.src=url;
       image.onload=()=>URL.revokeObjectURL(url);
       wrapper.appendChild(image);
     }
   });
+
   messages.appendChild(wrapper);
-}
+  }
+      
 
 async function sendMessage(){
   const input = document.getElementById('chatInput');
