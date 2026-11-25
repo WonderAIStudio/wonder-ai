@@ -209,6 +209,8 @@ function openPanel(id){
 }
 
 let currentChatId=null;
+let editingMessageIndex=null;
+let activeChatController = null;
 let chatHistory=[];
 let voiceRecognition=null;
 let selectedChatFiles=[];
@@ -264,27 +266,35 @@ function clearChatAttachments(){
   renderAttachmentSelection();
 }
 
-function addChatMessage(role,text,files){
+
+function addChatMessage(role,text,files,messageIndex=null){
   const messages=document.getElementById('chatMessages');
   const wrapper=document.createElement('div');
   wrapper.className='message';
+if(messageIndex===null){
+  const existingChat=chatHistory.find(
+    item=>item.id===currentChatId
+  );
 
+  messageIndex=role==='user'
+    ? (existingChat?.messages?.length || 0)
+    : -1;
+}
+
+wrapper.dataset.messageIndex=String(messageIndex);
   const label=document.createElement('strong');
   label.textContent=role==='user'?'You:':'WONDER AI:';
   wrapper.appendChild(label);
 
   const content=document.createElement('div');
   content.className='chat-rich-content';
-
   content.style.lineHeight='1.7';
   content.style.overflowWrap='anywhere';
 
-  // Safely format inline Markdown
   function addInlineText(parent,value){
     const pattern=/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g;
-    const parts=value.split(pattern);
 
-    parts.forEach(part=>{
+    value.split(pattern).forEach(part=>{
       if(!part)return;
 
       let element;
@@ -306,12 +316,13 @@ function addChatMessage(role,text,files){
     });
   }
 
-  // Convert Markdown into readable blocks
   const lines=String(text||'').replace(/\r/g,'').split('\n');
 
   let paragraphLines=[];
   let currentList=null;
-let orderedNumber=0;
+  let orderedNumber=0;
+  let inCodeBlock=false;
+  let codeLines=[];
 
   function flushParagraph(){
     if(!paragraphLines.length)return;
@@ -327,14 +338,117 @@ let orderedNumber=0;
     currentList=null;
   }
 
-  lines.forEach(line=>{
+  function isTableSeparator(line){
+    return /^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?\s*$/.test(line);
+  }
+
+  function getTableCells(line){
+    return line.trim().replace(/^\|/,'').replace(/\|$/,'')
+      .split('|').map(cell=>cell.trim());
+  }
+
+  function createTable(startIndex){
+    const headers=getTableCells(lines[startIndex]);
+    const rows=[];
+    let index=startIndex+2;
+
+    while(index<lines.length&&lines[index].includes('|')&&lines[index].trim()){
+      rows.push(getTableCells(lines[index]));
+      index++;
+    }
+
+    const table=document.createElement('table');
+    table.style.width='100%';
+    table.style.borderCollapse='collapse';
+    table.style.margin='12px 0';
+    table.style.display='block';
+    table.style.overflowX='auto';
+
+    const thead=document.createElement('thead');
+    const headerRow=document.createElement('tr');
+
+    headers.forEach(value=>{
+      const th=document.createElement('th');
+      th.style.border='1px solid #64748b';
+      th.style.padding='8px';
+      th.style.textAlign='left';
+      addInlineText(th,value);
+      headerRow.appendChild(th);
+    });
+
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    const tbody=document.createElement('tbody');
+
+    rows.forEach(row=>{
+      const tr=document.createElement('tr');
+
+      headers.forEach((value,index)=>{
+        const td=document.createElement('td');
+        td.style.border='1px solid #64748b';
+        td.style.padding='8px';
+        addInlineText(td,row[index]||'');
+        tr.appendChild(td);
+      });
+
+      tbody.appendChild(tr);
+    });
+
+    table.appendChild(tbody);
+    content.appendChild(table);
+
+    return index;
+  }
+
+  let i=0;
+
+  while(i<lines.length){
+    const line=lines[i];
+
+    if(line.trim().startsWith('```')){
+      flushParagraph();
+      closeList();
+
+      if(!inCodeBlock){
+        codeLines=[];
+        inCodeBlock=true;
+      }else{
+        const pre=document.createElement('pre');
+        const code=document.createElement('code');
+
+        pre.style.background='#080d20';
+        pre.style.color='#e2e8f0';
+        pre.style.padding='14px';
+        pre.style.borderRadius='8px';
+        pre.style.overflowX='auto';
+        pre.style.whiteSpace='pre';
+
+        code.textContent=codeLines.join('\n');
+        pre.appendChild(code);
+        content.appendChild(pre);
+
+        inCodeBlock=false;
+      }
+
+      i++;
+      continue;
+    }
+
+    if(inCodeBlock){
+      codeLines.push(line);
+      i++;
+      continue;
+    }
+
     const heading=line.match(/^(#{1,3})\s+(.+)$/);
     const bullet=line.match(/^\s*[-*]\s+(.+)$/);
     const numbered=line.match(/^\s*\d+[.)]\s+(.+)$/);
 
     if(!line.trim()){
-  flushParagraph();
-  return;
+      flushParagraph();
+      i++;
+      continue;
     }
 
     if(heading){
@@ -347,7 +461,21 @@ let orderedNumber=0;
       h.style.lineHeight='1.4';
       addInlineText(h,heading[2]);
       content.appendChild(h);
-      return;
+
+      i++;
+      continue;
+    }
+
+    if(
+      line.includes('|')&&
+      i+1<lines.length&&
+      isTableSeparator(lines[i+1])
+    ){
+      flushParagraph();
+      closeList();
+
+      i=createTable(i);
+      continue;
     }
 
     if(bullet||numbered){
@@ -359,11 +487,11 @@ let orderedNumber=0;
         closeList();
         currentList=document.createElement(type);
 
-if(type==='ol'){
-  currentList.start=orderedNumber+1;
-}
+        if(type==='ol'){
+          currentList.start=orderedNumber+1;
+        }
 
-currentList.style.paddingLeft='24px';
+        currentList.style.paddingLeft='24px';
         currentList.style.margin='8px 0 14px';
         content.appendChild(currentList);
       }
@@ -373,21 +501,38 @@ currentList.style.paddingLeft='24px';
       addInlineText(li,(bullet||numbered)[1]);
       currentList.appendChild(li);
 
-if(type==='ol'){
-  orderedNumber++;
-    }
-      return;
+      if(type==='ol'){
+        orderedNumber++;
+      }
+
+      i++;
+      continue;
     }
 
     closeList();
     paragraphLines.push(line.trim());
-  });
+    i++;
+  }
+
+  if(inCodeBlock){
+    const pre=document.createElement('pre');
+    const code=document.createElement('code');
+
+    pre.style.background='#080d20';
+    pre.style.color='#e2e8f0';
+    pre.style.padding='14px';
+    pre.style.borderRadius='8px';
+    pre.style.overflowX='auto';
+    pre.style.whiteSpace='pre';
+
+    code.textContent=codeLines.join('\n');
+    pre.appendChild(code);
+    content.appendChild(pre);
+  }
 
   flushParagraph();
-
   wrapper.appendChild(content);
 
-  // Preserve file attachments and image previews
   (files||[]).forEach(file=>{
     const chip=document.createElement('span');
     chip.className='file-chip';
@@ -403,14 +548,86 @@ if(type==='ol'){
       wrapper.appendChild(image);
     }
   });
+  // Message action buttons
+  const actions=document.createElement('div');
+  actions.style.display='flex';
+  actions.style.flexWrap='wrap';
+  actions.style.gap='8px';
+  actions.style.marginTop='10px';
 
-  messages.appendChild(wrapper);
+  function makeAction(label,callback){
+    const button=document.createElement('button');
+    button.type='button';
+    button.textContent=label;
+    button.style.padding='7px 12px';
+    button.style.borderRadius='7px';
+    button.style.cursor='pointer';
+    button.addEventListener('click',callback);
+    actions.appendChild(button);
   }
+
+  // Copy message
+  makeAction('📋 Copy',async()=>{
+    try{
+      await navigator.clipboard.writeText(String(text||''));
+      alert('Message copied!');
+    }catch(error){
+      alert('Copy was unsuccessful. Please try again.');
+    }
+  });
+
+  // Read AI reply aloud
+  if(role==='assistant'){
+    makeAction('🔊 Read Aloud',()=>{
+      if(!('speechSynthesis' in window)){
+        alert('Read Aloud is not supported by this browser.');
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+
+      const speech=new SpeechSynthesisUtterance(String(text||''));
+      window.speechSynthesis.speak(speech);
+    });
+
+    makeAction('⏹ Stop',()=>{
+      if('speechSynthesis' in window){
+        window.speechSynthesis.cancel();
+      }
+    });
+  }
+
+  // Edit user's message
+  if(role==='user'){
+    makeAction('✏️ Edit',()=>{
+      const chat=chatHistory.find(
+        item=>item.id===currentChatId
+      );
+
+editingMessageIndex=Number(
+  wrapper.dataset.messageIndex
+);
+
+      document.getElementById('chatInput').value=String(text||'');
+      document.getElementById('chatInput').focus();
+    });
+  }
+
+  wrapper.appendChild(actions);
+  messages.appendChild(wrapper);
+
+return wrapper;
+  }
+  
     
 async function sendMessage(){
   const input = document.getElementById('chatInput');
   const question = input.value.trim();
   const files = selectedChatFiles.slice();
+
+  if(activeChatController){
+    return;
+  }
 
   if(!question && files.length === 0){
     alert('Please write a message first.');
@@ -428,16 +645,27 @@ async function sendMessage(){
     item => item.id === currentChatId
   );
 
-  const previousMessages = currentChat
+  const editIndex = editingMessageIndex;
+
+  // Preserve the original conversation during editing
+  const originalMessages = currentChat
     ? (currentChat.messages || [])
-        .filter(item =>
-          item.role === 'user' || item.role === 'assistant'
-        )
-        .map(item => ({
-          role: item.role,
-          content: item.text || ''
-        }))
     : [];
+
+  const baseMessages =
+    editIndex !== null && currentChat
+      ? originalMessages.slice(0, editIndex)
+      : originalMessages;
+
+  const previousMessages = baseMessages
+    .filter(item =>
+      item.role === 'user' ||
+      item.role === 'assistant'
+    )
+    .map(item => ({
+      role: item.role,
+      content: item.text || ''
+    }));
 
   const conversationMessages = [
     ...previousMessages,
@@ -447,13 +675,34 @@ async function sendMessage(){
     }
   ].slice(-20);
 
-  addChatMessage('user', message, []);
+  const controller = new AbortController();
+  activeChatController = controller;
+
+  const pendingUserMessage =
+    addChatMessage('user', message, []);
+
   input.value = '';
 
   const typing = document.createElement('div');
   typing.className = 'message';
-  typing.textContent = 'WONDER AI is thinking...';
   typing.id = 'wonderAITyping';
+  typing.textContent = 'WONDER AI is thinking...';
+
+  const stopButton = document.createElement('button');
+  stopButton.type = 'button';
+  stopButton.textContent = '⏹ Stop Generating';
+  stopButton.style.marginTop = '10px';
+  stopButton.style.padding = '8px 12px';
+  stopButton.style.borderRadius = '7px';
+  stopButton.style.cursor = 'pointer';
+
+  stopButton.addEventListener('click', () => {
+    controller.abort();
+  });
+
+  typing.appendChild(document.createElement('br'));
+  typing.appendChild(stopButton);
+
   document.getElementById('chatMessages').appendChild(typing);
 
   try {
@@ -464,14 +713,16 @@ async function sendMessage(){
       },
       body: JSON.stringify({
         action: 'chat',
-        summary: currentChat?.summary || '',
+        summary:
+          editIndex !== null
+            ? ''
+            : (currentChat?.summary || ''),
         messages: conversationMessages
-      })
+      }),
+      signal: controller.signal
     });
 
     const data = await response.json();
-
-    document.getElementById('wonderAITyping')?.remove();
 
     if(!response.ok){
       throw new Error(
@@ -482,20 +733,50 @@ async function sendMessage(){
     const replyText = data.reply ||
       'I could not generate a response.';
 
-    addChatMessage('assistant', replyText, []);
+    // Save only after a successful response
+    if(editIndex !== null && currentChat){
+      currentChat.messages = baseMessages;
+      currentChat.summary = '';
+      currentChat.summarizedCount = 0;
+      currentChat.summaryUpdatedAt = null;
+    }
+
+    editingMessageIndex = null;
 
     saveCurrentChat(message, replyText, []);
 
-    // Automatically update conversation memory
     const savedChat = chatHistory.find(
       item => item.id === currentChatId
     );
 
+    // Rebuild edited conversation with correct message controls
+    if(editIndex !== null && savedChat){
+      const messages =
+        document.getElementById('chatMessages');
+
+      messages.replaceChildren();
+
+      (savedChat.messages || []).forEach(
+        (savedMessage, index) => {
+          addChatMessage(
+            savedMessage.role,
+            savedMessage.text,
+            savedMessage.attachments || [],
+            index
+          );
+        }
+      );
+    }else{
+      addChatMessage('assistant', replyText, []);
+    }
+
+    // Automatically update conversation memory
     if(savedChat){
       const summarizedCount =
         Number(savedChat.summarizedCount) || 0;
 
-      const totalMessages = savedChat.messages.length;
+      const totalMessages =
+        savedChat.messages.length;
 
       if(
         totalMessages >= 20 &&
@@ -543,19 +824,22 @@ async function sendMessage(){
               summaryResponse.ok &&
               summaryData.summary
             ){
-              savedChat.summary = summaryData.summary;
+              savedChat.summary =
+                summaryData.summary;
+
               savedChat.summarizedCount = cutoff;
+
               savedChat.summaryUpdatedAt =
                 new Date().toISOString();
 
               saveChatHistory();
-            } else {
+            }else{
               console.warn(
                 'WONDER AI memory update was unsuccessful.'
               );
             }
 
-          } catch(summaryError) {
+          }catch(summaryError){
             console.error(
               'Memory update error:',
               summaryError
@@ -565,21 +849,41 @@ async function sendMessage(){
       }
     }
 
-  } catch(error) {
+  }catch(error){
+
+    // Remove the unfinished message
+    pendingUserMessage.remove();
+
+    if(error.name === 'AbortError'){
+      input.value = message;
+
+      // Keep edit mode active if this was an edit
+      editingMessageIndex = editIndex;
+
+    }else{
+      input.value = message;
+      editingMessageIndex = editIndex;
+
+      addChatMessage(
+        'assistant',
+        'Sorry, WONDER AI could not complete your request. Your message is still available. Please try again.',
+        []
+      );
+
+      console.error('WONDER AI error:', error);
+    }
+
+  }finally{
     document.getElementById('wonderAITyping')?.remove();
 
-    addChatMessage(
-      'assistant',
-      'Sorry, WONDER AI could not connect right now. Please try again later.',
-      []
-    );
+    if(activeChatController === controller){
+      activeChatController = null;
+    }
 
-    console.error('WONDER AI error:', error);
+    clearChatAttachments();
   }
-
-  clearChatAttachments();
   }
-                                             
+  
 function showNewChat(){
   currentChatId=null;
   openPanel('chat');
@@ -598,18 +902,54 @@ function showChatHistory(){
     row.appendChild(button);area.appendChild(row);
   });
 }
+
 function openSavedChat(id){
-  const chat=chatHistory.find(item=>item.id===id);if(!chat)return;
-  currentChatId=id;openPanel('chat');
-  const messages=document.getElementById('chatMessages');messages.replaceChildren();
-  (chat.messages||[]).forEach(message=>{
-    const wrapper=document.createElement('div');wrapper.className='message';
-    const p=document.createElement('p');p.textContent=(message.role==='user'?'You: ':'WONDER AI: ')+message.text;wrapper.appendChild(p);
-    (message.attachments||[]).forEach(name=>{const chip=document.createElement('span');chip.className='file-chip';chip.textContent='📎 '+name;wrapper.appendChild(chip);});
-    messages.appendChild(wrapper);
-  });
-  document.getElementById('chatInput').value='';clearChatAttachments();
-}
+  const chat = chatHistory.find(
+    item => item.id === id
+  );
+
+  if(!chat)return;
+
+  // Do not switch conversations while generating
+  if(activeChatController){
+    alert('Please stop the current response before opening another chat.');
+    return;
+  }
+
+  currentChatId = id;
+  editingMessageIndex = null;
+
+  openPanel('chat');
+
+  const messages =
+    document.getElementById('chatMessages');
+
+  messages.replaceChildren();
+
+  (chat.messages || []).forEach(
+    (message, index) => {
+
+      const attachments =
+        (message.attachments || []).map(file => {
+          return typeof file === 'string'
+            ? {name: file}
+            : file;
+        });
+
+      addChatMessage(
+        message.role,
+        message.text,
+        attachments,
+        index
+      );
+    }
+  );
+
+  document.getElementById('chatInput').value = '';
+
+  clearChatAttachments();
+  }
+  
 function downloadCurrentChat(){
   let chat=chatHistory.find(item=>item.id===currentChatId);
   if(!chat){
